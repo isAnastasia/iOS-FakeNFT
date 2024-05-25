@@ -93,4 +93,8 @@ extension UIColor {
     static let blackUniversal = UIColor(hex: 0x1A1B22)
     static let whiteUniversal = UIColor(hex: 0xFFFFFF)
     static let yellowUniversal = UIColor(hex: 0xFEEF0D)
+    
+    // MARK: - Additional Colors
+    static let closeButtonColor = UIColor(hex: 0x8E8E93)
+    static let userPhotoEditorBackgroundColor = UIColor(hex: 0x1A1B22, alpha: 0.6)
 }

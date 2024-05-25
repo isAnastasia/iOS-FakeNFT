@@ -9,10 +9,9 @@ import UIKit
 
 class ProfileViewController: UIViewController {
     
-    // MARK: - Public Properties
-    
-    
     // MARK: - Private Properties
+    private var viewModel: ProfileViewModel!
+    
     private let editButton = Buttons(style: .editButtonStyle)
     private let userPhotoImage = ImageViews(style: .userPhotoStyle)
     private let userNameLabel = Labels(style: .userNameLabelStyle)
@@ -22,33 +21,40 @@ class ProfileViewController: UIViewController {
     private let userPhotoAndNameStackView = StackViews(style: .horizontal16Style)
     private let userInfoStackView = StackViews(style: .vertical8Style)
     
-    private var myNftCount = 0 {
-        didSet {
-            updateLabel(myNftLabel, withText: "Мои NFT (\(myNftCount))")
-        }
-    }
-    
-    private var favoriteNftCount = 0 {
-        didSet {
-            updateLabel(favoriteNftLabel, withText: "Избранные NFT (\(favoriteNftCount))")
-        }
-    }
-    
     private let myNftLabel = Labels(style: .myNftLabel, text: "Мои NFT (0)")
     private let favoriteNftLabel = Labels(style: .favoriteNftLabel, text: "Избранные NFT (0)")
     private let aboutDeveloperLabel = Labels(style: .aboutDeveloperLabel)
     
-    
     private let tableView = UITableView()
-    
     
     // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        viewModel = ProfileViewModel()
         setupViewsAndConstraints()
         setupTableView()
-        loadData()
+        setupBindings()
+        setupEditButtonAction()
+        viewModel.loadData()
+    }
+
+    // MARK: - Private Methods
+    private func setupBindings() {
+        viewModel.onProfileDataUpdated = { [weak self] in
+            self?.updateUI()
+        }
+    }
+
+    private func updateUI() {
+        guard let profile = viewModel.userProfile else { return }
+        userNameLabel.text = profile.userName
+        userDescriptionLabel.text = profile.userDescription
+        userWebsiteLabel.text = profile.userWebsite
+        userPhotoImage.image = profile.userPhoto
+        myNftLabel.text = "Мои NFT (\(profile.myNftCount))"
+        favoriteNftLabel.text = "Избранные NFT (\(profile.favoriteNftCount))"
+        tableView.reloadData()
     }
     
     private func setupTableView() {
@@ -61,21 +67,29 @@ class ProfileViewController: UIViewController {
         tableView.separatorStyle = .none
     }
     
-    private func loadData() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.myNftCount = 112
-            self.favoriteNftCount = 11
-        }
-    }
-    
-    private func updateLabel(_ label: Labels, withText text: String) {
-        label.text = text
-    }
-    
     private func customAccessoryView() -> UIView {
         let accessoryView = UIImageView(image: UIImage(systemName: "chevron.right"))
         accessoryView.tintColor = .blackDay
         return accessoryView
+    }
+    
+    private func setupEditButtonAction() {
+        editButton.addTarget(
+            self,
+            action: #selector(editButtonTapped),
+            for: .touchUpInside
+        )
+    }
+
+    // MARK: - Event Handler (Actions)
+    @objc private func editButtonTapped() {
+        guard let profile = viewModel.userProfile else { return }
+        let profileEditorVC = ProfileEditorViewController()
+        profileEditorVC.viewModel = ProfileEditorViewModel(profile: profile)
+        profileEditorVC.onProfileUpdated = { [weak self] updatedProfile in
+            self?.viewModel.userProfile = updatedProfile
+        }
+        present(profileEditorVC, animated: true, completion: nil)
     }
 }
 
@@ -147,3 +161,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
 }
+
+
+
+
