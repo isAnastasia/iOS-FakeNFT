@@ -3,8 +3,9 @@ import UIKit
 final class TestCatalogViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     let servicesAssembly: ServicesAssembly
-    let testNftButton = UIButton()
+    var collectionsViewModel = CatalogCollectionsViewModel()
     
+    let testNftButton = UIButton()
     private let tableView = UITableView()
     private var navigationBar: UINavigationBar?
 
@@ -23,6 +24,11 @@ final class TestCatalogViewController: UIViewController, UITableViewDataSource, 
         view.backgroundColor = .systemBackground
         setUpNavigationTabBar()
         initTableView()
+        
+        collectionsViewModel.collectionsBinding = { [weak self] _ in
+            guard let self = self else {return}
+            self.tableView.reloadData()
+        }
 //        view.addSubview(testNftButton)
 //        testNftButton.constraintCenters(to: view)
 //        testNftButton.setTitle(Constants.openNftTitle, for: .normal)
@@ -49,13 +55,12 @@ final class TestCatalogViewController: UIViewController, UITableViewDataSource, 
             return UITableViewCell()
         }
         cell.prepareForReuse()
-        cell.imageCard.image = UIImage(named: "cover.png")
-        cell.title.text = "Peach (11)"
+        cell.viewModel = collectionsViewModel.collections[indexPath.row]
         return cell
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return collectionsViewModel.collections.count
     }
     
     //MARK: - Delegate

@@ -11,6 +11,18 @@ import UIKit
 final class CatalogTableViewCell: UITableViewCell {
     static let identifier = "CatalogTableViewCell"
     
+    var viewModel: CatalogSingleCollectionViewModel? {
+        didSet {
+            viewModel?.titleBinding = { [weak self] title in
+                self?.title.text = title
+            }
+            
+            viewModel?.coverBinding = { [weak self] cover in
+                self?.imageCard.image = cover
+            }
+        }
+    }
+    
     let imageCard: UIImageView = {
         let view = UIImageView()
         view.layer.cornerRadius = 16
