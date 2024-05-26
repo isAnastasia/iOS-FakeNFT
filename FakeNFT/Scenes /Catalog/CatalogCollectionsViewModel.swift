@@ -18,14 +18,37 @@ final class CatalogCollectionsViewModel {
     
     private let provider: CatalogCollectionsProvider
     
-    init(provider: CatalogCollectionsProvider) {
-        self.provider = provider
-        self.collections = provider.getCollections()
+    convenience init() {
+        let provider = CatalogCollectionsProvider(networkClient: DefaultNetworkClient())
+        self.init(provider: provider)
     }
     
-    convenience init() {
-        let provider = CatalogCollectionsProvider()
-        self.init(provider: provider)
+    init(provider: CatalogCollectionsProvider) {
+        self.provider = provider
+        self.fetchCollections()
+    }
+    
+    private func fetchCollections() {
+        var convertedCollections: [CatalogSingleCollectionViewModel] = []
+        provider.getCollections { [weak self] result in
+            switch result {
+            case .success(let nftCollectionsResult):
+                nftCollectionsResult.forEach { collection in
+                    convertedCollections.append(CatalogSingleCollectionViewModel(
+                        title: collection.name,
+                        cover: collection.cover,
+                        nftCount: collection.nfts.count))
+                }
+                
+                print("")
+                self?.collections = convertedCollections
+                //return []
+            case .failure(let error):
+                print(error)
+                //return []
+            }
+            
+        }
     }
     
 }
