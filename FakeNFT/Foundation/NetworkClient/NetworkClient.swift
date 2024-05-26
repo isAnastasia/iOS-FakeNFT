@@ -124,8 +124,8 @@ struct DefaultNetworkClient: NetworkClient {
             urlRequest.httpBody = dtoEncoded
         }
         
-        urlRequest.setValue(RequestConstants.tokenValue, forHTTPHeaderField: RequestConstants.tokenKey)
-        urlRequest.setValue(RequestConstants.acceptValue, forHTTPHeaderField: RequestConstants.acceptKey)
+        urlRequest.setValue(NetworkConstants.tokenValue, forHTTPHeaderField: NetworkConstants.tokenKey)
+        urlRequest.setValue(NetworkConstants.acceptValue, forHTTPHeaderField: NetworkConstants.acceptKey)
         return urlRequest
     }
 
