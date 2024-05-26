@@ -123,7 +123,9 @@ struct DefaultNetworkClient: NetworkClient {
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
             urlRequest.httpBody = dtoEncoded
         }
-
+        
+        urlRequest.setValue(RequestConstants.tokenValue, forHTTPHeaderField: RequestConstants.tokenKey)
+        urlRequest.setValue(RequestConstants.acceptValue, forHTTPHeaderField: RequestConstants.acceptKey)
         return urlRequest
     }
 
