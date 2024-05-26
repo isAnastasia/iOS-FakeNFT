@@ -8,13 +8,13 @@
 import UIKit
 
 class ProfileEditorViewModel {
-    var userProfile: UserProfile? {
+    var userProfile: UserProfileModel? {
         didSet {
             saveProfileData()
         }
     }
     
-    init(profile: UserProfile?) {
+    init(profile: UserProfileModel?) {
         self.userProfile = profile
     }
     
@@ -41,7 +41,7 @@ class ProfileEditorViewModel {
         defaults.set(profile.userWebsite, forKey: "userWebsite")
     }
     
-    static func loadProfileData() -> UserProfile? {
+    static func loadProfileData() -> UserProfileModel? {
         let defaults = UserDefaults.standard
         guard
             let userName = defaults.string(forKey: "userName"),
@@ -51,7 +51,7 @@ class ProfileEditorViewModel {
         else {
             return nil
         }
-        return UserProfile(
+        return UserProfileModel(
             userName: userName,
             userDescription: userDescription,
             userWebsite: userWebsite,

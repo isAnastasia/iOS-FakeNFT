@@ -10,7 +10,7 @@ import UIKit
 class ProfileEditorViewController: UIViewController {
     
     var viewModel: ProfileEditorViewModel?
-    var onProfileUpdated: ((UserProfile) -> Void)?
+    var onProfileUpdated: ((UserProfileModel) -> Void)?
     
     // MARK: - Private Properties
     private lazy var nameTF = TextFields(

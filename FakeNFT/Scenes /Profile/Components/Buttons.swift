@@ -11,6 +11,8 @@ enum ButtonsStyle {
     case editButtonStyle
     case closeButtonStyle
     case userPhotoEditor
+    case backButtonStyle
+    case sortButtonStyle
 }
 
 final class Buttons: UIButton {
@@ -44,6 +46,14 @@ final class Buttons: UIButton {
             self.titleLabel?.textAlignment = .center
             self.widthAnchor.constraint(equalToConstant: 45).isActive = true
             self.heightAnchor.constraint(equalToConstant: 24).isActive = true
+        case .backButtonStyle:
+            self.setImage(UIImage(named: "backButton"), for: .normal)
+            self.widthAnchor.constraint(equalToConstant: 24).isActive = true
+            self.heightAnchor.constraint(equalToConstant: 24).isActive = true
+        case .sortButtonStyle:
+            self.setImage(UIImage(named: "sortButton"), for: .normal)
+            self.widthAnchor.constraint(equalToConstant: 42).isActive = true
+            self.heightAnchor.constraint(equalToConstant: 42).isActive = true
         }
         self.translatesAutoresizingMaskIntoConstraints = false
     }

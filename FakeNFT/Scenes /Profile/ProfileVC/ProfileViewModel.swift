@@ -10,7 +10,7 @@ import UIKit
 class ProfileViewModel {
     
     // MARK: - Public Properties
-    var userProfile: UserProfile? {
+    var userProfile: UserProfileModel? {
         didSet {
             updateProfileData()
         }
@@ -28,7 +28,7 @@ class ProfileViewModel {
         if let savedProfile = ProfileEditorViewModel.loadProfileData() {
             userProfile = savedProfile
         } else {
-            userProfile = UserProfile(
+            userProfile = UserProfileModel(
                 userName: "Joaquin Phoenix",
                 userDescription: """
                     Дизайнер из Казани, люблю цифровое искусство и бейглы. В моей коллекции уже 100+ NFT, и еще больше — на моём сайте. Открыт к коллаборациям.

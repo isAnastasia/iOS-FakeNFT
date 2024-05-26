@@ -11,12 +11,13 @@ enum LabelsStyle {
     case userNameLabelStyle
     case userDescription
     case userWebsite
-    case myNftLabel
-    case favoriteNftLabel
+    case bold17LabelStyle
     case aboutDeveloperLabel
     case nameLabelStyle
     case descriptionLabelStyle
     case websiteLabelStyle
+    case fromLabelStyle
+    case regular13LabelStyle
 }
 
 
@@ -50,7 +51,7 @@ final class Labels: UILabel {
             self.font = UIFont.systemFont(ofSize: 15, weight: .regular)
             self.text = "Joaquin Phoenix.com"
             self.textColor = .blueUniversal
-        case .myNftLabel, .favoriteNftLabel:
+        case .bold17LabelStyle:
             self.font = UIFont.boldSystemFont(ofSize: 17)
             self.text = text
             self.textColor = .blackDay
@@ -69,6 +70,13 @@ final class Labels: UILabel {
         case .websiteLabelStyle:
             self.font = UIFont.boldSystemFont(ofSize: 17)
             self.text = "Сайт"
+            self.textColor = .blackDay
+        case .fromLabelStyle:
+            self.font = UIFont.systemFont(ofSize: 15, weight: .regular)
+            self.text = "ОТ"
+            self.textColor = .blackDay
+        case .regular13LabelStyle:
+            self.font = UIFont.systemFont(ofSize: 13, weight: .regular)
             self.textColor = .blackDay
         }
         self.translatesAutoresizingMaskIntoConstraints = false

@@ -11,6 +11,9 @@ enum StackViewStyle {
     case vertical8Style
     case horizontal16Style
     case vertical24Style
+    case vertical4Style
+    case vertical2Style
+    case horizontal4Style
 }
 
 final class StackViews: UIStackView {
@@ -41,6 +44,21 @@ final class StackViews: UIStackView {
         case .horizontal16Style:
             self.axis = .horizontal
             self.spacing = 16
+            self.alignment = .fill
+            self.distribution = .fill
+        case .vertical4Style:
+            self.axis = .vertical
+            self.spacing = 4
+            self.alignment = .fill
+            self.distribution = .fill
+        case .vertical2Style:
+            self.axis = .vertical
+            self.spacing = 2
+            self.alignment = .fill
+            self.distribution = .fill
+        case .horizontal4Style:
+            self.axis = .horizontal
+            self.spacing = 4
             self.alignment = .fill
             self.distribution = .fill
         }

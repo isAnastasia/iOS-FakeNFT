@@ -10,6 +10,8 @@ import UIKit
 enum ImagesStyle {
     case userPhotoStyle
     case backgroundStyle
+    case myNFTStyle
+    case myNFTRating
 }
 
 final class ImageViews: UIImageView {
@@ -35,6 +37,12 @@ final class ImageViews: UIImageView {
             self.backgroundColor = .userPhotoEditorBackgroundColor
             self.widthAnchor.constraint(equalToConstant: 70).isActive = true
             self.heightAnchor.constraint(equalToConstant: 70).isActive = true
+        case .myNFTStyle:
+            self.widthAnchor.constraint(equalToConstant: 108).isActive = true
+            self.heightAnchor.constraint(equalToConstant: 108).isActive = true
+        case .myNFTRating:
+            self.widthAnchor.constraint(equalToConstant: 68).isActive = true
+            self.heightAnchor.constraint(equalToConstant: 12).isActive = true
         }
         self.translatesAutoresizingMaskIntoConstraints = false
         self.clipsToBounds = true
