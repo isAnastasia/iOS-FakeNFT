@@ -56,8 +56,9 @@ final class TabBarController: UITabBarController {
                 image: UIImage(named: tabItem.image),
                 selectedImage: UIImage(named: tabItem.selectedImage)
             )
-            tabItem.controller.tabBarItem = tabBarItem
-            viewControllers.append(tabItem.controller)
+            let navController = UINavigationController(rootViewController: tabItem.controller)
+            navController.tabBarItem = tabBarItem
+            viewControllers.append(navController)
         }
         
         self.viewControllers = viewControllers
