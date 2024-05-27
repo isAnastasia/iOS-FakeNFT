@@ -7,6 +7,8 @@
 
 import Foundation
 import UIKit
+import Kingfisher
+
 
 final class CatalogTableViewCell: UITableViewCell {
     static let identifier = "CatalogTableViewCell"
@@ -18,7 +20,7 @@ final class CatalogTableViewCell: UITableViewCell {
             }
             
             viewModel?.coverBinding = { [weak self] cover in
-                self?.imageCard.image = cover
+                self?.loadCover(urlString: cover)
             }
         }
     }
@@ -31,6 +33,10 @@ final class CatalogTableViewCell: UITableViewCell {
     
     let title = UILabel()
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageCard.kf.cancelDownloadTask()
+    }
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         layer.cornerRadius = 16
@@ -70,5 +76,22 @@ final class CatalogTableViewCell: UITableViewCell {
             title.topAnchor.constraint(equalTo: imageCard.bottomAnchor, constant: 4),
             title.heightAnchor.constraint(equalToConstant: 22)
         ])
+    }
+    
+    private func loadCover(urlString: String) {
+        guard let encodingStr = urlString.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed) else {
+            print("error converting url")
+            return
+        }
+        let processor = RoundCornerImageProcessor(cornerRadius: 16)
+        if let imageUrl = URL(string: encodingStr) {
+            imageCard.kf.indicatorType = .activity
+            imageCard.kf.setImage(with: imageUrl, placeholder: UIImage(named: "Card.png"), options: [.processor(processor)]) 
+            imageCard.contentMode = .scaleAspectFill
+            imageCard.layer.cornerRadius = 16
+            imageCard.layer.masksToBounds = false
+            imageCard.clipsToBounds = true
+        }
+        
     }
 }

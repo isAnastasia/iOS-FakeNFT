@@ -20,9 +20,9 @@ final class CatalogSingleCollectionViewModel {
             titleBinding?(convertCollectionName())
         }
     }
-    var coverBinding: Binding<UIImage>? {
+    var coverBinding: Binding<String>? {
         didSet {
-            coverBinding?(loadCover())
+            coverBinding?(cover)
         }
     }
     
@@ -37,7 +37,4 @@ final class CatalogSingleCollectionViewModel {
         return result
     }
     
-    private func loadCover() -> UIImage {
-        return UIImage(named: "cover")!
-    }
 }

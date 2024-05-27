@@ -39,10 +39,8 @@ final class CatalogCollectionsProvider {
         networkClient.send(request: request, type: [NftCollection].self) { [weak self] result in
             switch result {
             case .success(let nft):
-                print(nft)
                 completion(.success(nft))
             case .failure(let error):
-                print("ERRoR")
                 completion(.failure(error))
             }
         }

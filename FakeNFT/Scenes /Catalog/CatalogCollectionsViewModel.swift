@@ -39,16 +39,10 @@ final class CatalogCollectionsViewModel {
                         cover: collection.cover,
                         nftCount: collection.nfts.count))
                 }
-                
-                print("")
                 self?.collections = convertedCollections
-                //return []
             case .failure(let error):
                 print(error)
-                //return []
             }
-            
         }
     }
-    
 }
