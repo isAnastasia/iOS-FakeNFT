@@ -77,7 +77,7 @@ class ProfileEditorViewController: UIViewController {
         nameTF.text = profile.userName
         descriptionTV.text = profile.userDescription
         websiteTF.text = profile.userWebsite
-        userPhotoImage.image = profile.userPhoto
+        userPhotoImage.image = UIImage(named: profile.userPhoto) // Здесь преобразуем строку в изображение
     }
     
     // MARK: - Event Handler (Actions)
@@ -92,7 +92,7 @@ class ProfileEditorViewController: UIViewController {
     }
     
     @objc private func userPhotoEditorButtonTapped() {
-        
+        // Обработчик смены фото пользователя
     }
     
     @objc private func nameTFDidChange(_ textField: UITextField) {

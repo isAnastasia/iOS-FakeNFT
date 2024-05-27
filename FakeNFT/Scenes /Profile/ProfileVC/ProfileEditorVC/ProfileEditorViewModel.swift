@@ -19,17 +19,20 @@ class ProfileEditorViewModel {
     }
     
     func updateUserName(_ name: String) {
-        userProfile?.userName = name
+        guard let profile = userProfile else { return }
+        userProfile = profile.updateUserName(name)
         saveProfileData()
     }
     
     func updateUserDescription(_ description: String) {
-        userProfile?.userDescription = description
+        guard let profile = userProfile else { return }
+        userProfile = profile.updateUserDescription(description)
         saveProfileData()
     }
     
     func updateUserWebsite(_ website: String) {
-        userProfile?.userWebsite = website
+        guard let profile = userProfile else { return }
+        userProfile = profile.updateUserWebsite(website)
         saveProfileData()
     }
     
@@ -39,6 +42,7 @@ class ProfileEditorViewModel {
         defaults.set(profile.userName, forKey: "userName")
         defaults.set(profile.userDescription, forKey: "userDescription")
         defaults.set(profile.userWebsite, forKey: "userWebsite")
+        // Сохранение других данных
     }
     
     static func loadProfileData() -> UserProfileModel? {
@@ -47,7 +51,7 @@ class ProfileEditorViewModel {
             let userName = defaults.string(forKey: "userName"),
             let userDescription = defaults.string(forKey: "userDescription"),
             let userWebsite = defaults.string(forKey: "userWebsite"),
-            let userPhoto = UIImage(named: "userPhoto")
+            let userPhoto = defaults.string(forKey: "userPhoto")
         else {
             return nil
         }
@@ -56,8 +60,9 @@ class ProfileEditorViewModel {
             userDescription: userDescription,
             userWebsite: userWebsite,
             userPhoto: userPhoto,
-            myNftCount: 112,
-            favoriteNftCount: 11
+            myNftCount: defaults.array(forKey: "myNftCount") as? [String] ?? [],
+            favoriteNftCount: defaults.array(forKey: "favoriteNftCount") as? [String] ?? []
         )
     }
 }
+
