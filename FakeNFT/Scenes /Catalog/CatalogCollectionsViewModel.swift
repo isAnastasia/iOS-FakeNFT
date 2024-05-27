@@ -28,6 +28,14 @@ final class CatalogCollectionsViewModel {
         self.fetchCollections()
     }
     
+    func filterCollectionsByName() {
+        
+    }
+    
+    func filterCollectionsByCount() {
+        
+    }
+    
     private func fetchCollections() {
         var convertedCollections: [CatalogSingleCollectionViewModel] = []
         provider.getCollections { [weak self] result in

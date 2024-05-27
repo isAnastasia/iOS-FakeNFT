@@ -46,7 +46,30 @@ final class TestCatalogViewController: UIViewController, UITableViewDataSource, 
     
     @objc
     func filterCollections() {
+        let alert = UIAlertController(
+            title: NSLocalizedString("Filter", comment: ""),
+            message: nil,
+            preferredStyle: .actionSheet)
         
+        let filterByNameAction = UIAlertAction(
+            title: NSLocalizedString("Filter.byName", comment: ""),
+            style: .default) { [weak self] _ in
+                guard let self = self else {return}
+                self.collectionsViewModel.filterCollectionsByName()
+        }
+        alert.addAction(filterByNameAction)
+        let filterByCountAction = UIAlertAction(
+            title: NSLocalizedString("Filter.byCount", comment: ""),
+            style: .default) { [weak self] _ in
+                guard let self = self else {return}
+                self.collectionsViewModel.filterCollectionsByCount()
+        }
+        alert.addAction(filterByCountAction)
+        alert.addAction(UIAlertAction(
+            title: NSLocalizedString("Close", comment: ""),
+            style: .cancel))
+        
+        present(alert, animated: true)
     }
     
     //MARK: -  Data Source
