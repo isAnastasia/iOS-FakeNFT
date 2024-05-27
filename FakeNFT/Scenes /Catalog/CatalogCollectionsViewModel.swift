@@ -29,11 +29,23 @@ final class CatalogCollectionsViewModel {
     }
     
     func filterCollectionsByName() {
-        
+        if !collections.isEmpty {
+            var filteredCollections = collections
+            filteredCollections.sort {
+                $0.name < $1.name
+            }
+            collections = filteredCollections
+        }
     }
     
     func filterCollectionsByCount() {
-        
+        if !collections.isEmpty {
+            var filteredCollections = collections
+            filteredCollections.sort {
+                $0.nftCount > $1.nftCount
+            }
+            collections = filteredCollections
+        }
     }
     
     private func fetchCollections() {
