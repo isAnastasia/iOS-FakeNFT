@@ -16,10 +16,10 @@ enum LabelsStyle {
     case nameLabelStyle
     case descriptionLabelStyle
     case websiteLabelStyle
-    case fromLabelStyle
     case regular13LabelStyle
+    case myNFTAuthorLabelStyle
+    case myNFTPriceLabelStyle
 }
-
 
 final class Labels: UILabel {
 
@@ -38,18 +38,16 @@ final class Labels: UILabel {
         switch style {
         case .userNameLabelStyle:
             self.font = UIFont.boldSystemFont(ofSize: 22)
-            self.text = "Joaquin Phoenix"
+            self.text = text
             self.textColor = .blackDay
         case .userDescription:
             self.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-            self.text = """
-                        Дизайнер из Казани, люблю цифровое искусство и бейглы. В моей коллекции уже 100+ NFT, и еще больше — на моём сайте. Открыт к коллаборациям.
-                        """
+            self.text = text
             self.numberOfLines = 0
             self.textColor = .blackDay
         case .userWebsite:
             self.font = UIFont.systemFont(ofSize: 15, weight: .regular)
-            self.text = "Joaquin Phoenix.com"
+            self.text = text
             self.textColor = .blueUniversal
         case .bold17LabelStyle:
             self.font = UIFont.boldSystemFont(ofSize: 17)
@@ -71,12 +69,16 @@ final class Labels: UILabel {
             self.font = UIFont.boldSystemFont(ofSize: 17)
             self.text = "Сайт"
             self.textColor = .blackDay
-        case .fromLabelStyle:
-            self.font = UIFont.systemFont(ofSize: 15, weight: .regular)
-            self.text = "ОТ"
-            self.textColor = .blackDay
         case .regular13LabelStyle:
             self.font = UIFont.systemFont(ofSize: 13, weight: .regular)
+            self.textColor = .blackDay
+        case .myNFTAuthorLabelStyle:
+            self.font = UIFont.systemFont(ofSize: 13, weight: .regular)
+            self.text = "от John Doe"
+            self.textColor = .blackDay
+        case .myNFTPriceLabelStyle:
+            self.font = UIFont.systemFont(ofSize: 13, weight: .regular)
+            self.text = "Цена"
             self.textColor = .blackDay
         }
         self.translatesAutoresizingMaskIntoConstraints = false

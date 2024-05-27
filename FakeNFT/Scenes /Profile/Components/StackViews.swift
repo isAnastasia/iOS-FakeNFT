@@ -14,6 +14,8 @@ enum StackViewStyle {
     case vertical4Style
     case vertical2Style
     case horizontal4Style
+    case myNFTDescriptionStyle
+    case myNFTPriceStyle
 }
 
 final class StackViews: UIStackView {
@@ -61,6 +63,20 @@ final class StackViews: UIStackView {
             self.spacing = 4
             self.alignment = .fill
             self.distribution = .fill
+        case .myNFTDescriptionStyle:
+            self.axis = .vertical
+            self.spacing = 4
+            self.alignment = .leading
+            self.distribution = .equalSpacing
+            self.widthAnchor.constraint(equalToConstant: 78).isActive = true
+            self.heightAnchor.constraint(equalToConstant: 62).isActive = true
+        case .myNFTPriceStyle:
+            self.axis = .vertical
+            self.spacing = 2
+            self.alignment = .leading
+            self.distribution = .equalSpacing
+            self.widthAnchor.constraint(equalToConstant: 75).isActive = true
+            self.heightAnchor.constraint(equalToConstant: 42).isActive = true
         }
         self.translatesAutoresizingMaskIntoConstraints = false
     }

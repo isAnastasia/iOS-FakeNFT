@@ -118,9 +118,18 @@ struct DefaultNetworkClient: NetworkClient {
         var urlRequest = URLRequest(url: endpoint)
         urlRequest.httpMethod = request.httpMethod.rawValue
 
+//        if let dto = request.dto,
+//           let dtoEncoded = try? encoder.encode(dto) {
+//            urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+//            urlRequest.httpBody = dtoEncoded
+//        }
+        
+        urlRequest.setValue(NetworkConstants.acceptValue, forHTTPHeaderField: NetworkConstants.acceptKey)
+        urlRequest.setValue(NetworkConstants.tokenValue, forHTTPHeaderField: NetworkConstants.tokenKey)
+        urlRequest.setValue(NetworkConstants.contentTypeValue, forHTTPHeaderField: NetworkConstants.contentTypeKey)
+        
         if let dto = request.dto,
            let dtoEncoded = try? encoder.encode(dto) {
-            urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
             urlRequest.httpBody = dtoEncoded
         }
 
@@ -132,6 +141,7 @@ struct DefaultNetworkClient: NetworkClient {
             let response = try decoder.decode(T.self, from: data)
             onResponse(.success(response))
         } catch {
+            print("Failed to parse data: \(String(data: data, encoding: .utf8) ?? "N/A")")
             onResponse(.failure(NetworkClientError.parsingError))
         }
     }

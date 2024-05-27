@@ -8,27 +8,35 @@
 import UIKit
 
 class ProfileViewController: UIViewController {
-    
+
     // MARK: - Private Properties
-    private var viewModel: ProfileViewModel!
-    
+    private var viewModel: ProfileViewModel?
+
     private lazy var editButton: UIBarButtonItem = {
-        return UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editButtonTapped))
+        let buttonImage = UIImage(named: "editButton")?.withRenderingMode(.alwaysOriginal)
+        let button = UIBarButtonItem(
+            image: buttonImage,
+            style: .plain,
+            target: self,
+            action: #selector(editButtonTapped)
+        )
+        return button
     }()
+
     private let userPhotoImage = ImageViews(style: .userPhotoStyle)
     private let userNameLabel = Labels(style: .userNameLabelStyle)
     private let userDescriptionLabel = Labels(style: .userDescription)
     private let userWebsiteLabel = Labels(style: .userWebsite)
-    
+
     private let userPhotoAndNameStackView = StackViews(style: .horizontal16Style)
     private let userInfoStackView = StackViews(style: .vertical8Style)
-    
+
     private let myNftLabel = Labels(style: .bold17LabelStyle, text: "Мои NFT (0)")
     private let favoriteNftLabel = Labels(style: .bold17LabelStyle, text: "Избранные NFT (0)")
     private let aboutDeveloperLabel = Labels(style: .aboutDeveloperLabel)
-    
+
     private let tableView = UITableView()
-    
+
     // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,27 +46,26 @@ class ProfileViewController: UIViewController {
         setupTableView()
         setupBindings()
         setupNavigationBar()
-        viewModel.loadData()
+        viewModel?.loadData()
     }
-    
+
     // MARK: - Private Methods
     private func setupBindings() {
-        viewModel.onProfileDataUpdated = { [weak self] in
+        viewModel?.onProfileDataUpdated = { [weak self] in
             self?.updateUI()
         }
     }
-    
+
     private func updateUI() {
-        guard let profile = viewModel.userProfile else { return }
-        userNameLabel.text = profile.userName
-        userDescriptionLabel.text = profile.userDescription
-        userWebsiteLabel.text = profile.userWebsite
-        userPhotoImage.image = profile.userPhoto
-        myNftLabel.text = "Мои NFT (\(profile.myNftCount))"
-        favoriteNftLabel.text = "Избранные NFT (\(profile.favoriteNftCount))"
+        guard let profile = viewModel?.userProfile else { return }
+        userNameLabel.text = profile.name
+        userDescriptionLabel.text = profile.description
+        userWebsiteLabel.text = profile.website
+        myNftLabel.text = "Мои NFT (\(profile.nfts.count))"
+        favoriteNftLabel.text = "Избранные NFT (\(profile.likes.count))"
         tableView.reloadData()
     }
-    
+
     private func setupTableView() {
         tableView.dataSource = self
         tableView.delegate = self
@@ -68,27 +75,26 @@ class ProfileViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.separatorStyle = .none
     }
-    
+
     private func customAccessoryView() -> UIView {
         let accessoryView = UIImageView(image: UIImage(systemName: "chevron.right"))
         accessoryView.tintColor = .blackDay
         return accessoryView
     }
-    
+
     private func setupNavigationBar() {
         navigationItem.rightBarButtonItem = editButton
-        navigationItem.title = "Профиль"
     }
-    
+
     // MARK: - Event Handler (Actions)
     @objc private func editButtonTapped() {
-        guard let profile = viewModel.userProfile else { return }
+        guard let profile = viewModel?.userProfile else { return }
         let profileEditorVC = ProfileEditorViewController()
         profileEditorVC.viewModel = ProfileEditorViewModel(profile: profile)
         profileEditorVC.onProfileUpdated = { [weak self] updatedProfile in
-            self?.viewModel.userProfile = updatedProfile
+            self?.viewModel?.userProfile = updatedProfile
         }
-        navigationController?.pushViewController(profileEditorVC, animated: true)
+        present(profileEditorVC, animated: true, completion: nil)
     }
 }
 
@@ -98,24 +104,24 @@ extension ProfileViewController {
         [userPhotoAndNameStackView, userInfoStackView, tableView].forEach {
             view.addSubview($0)
         }
-        
+
         [userPhotoImage, userNameLabel].forEach {
             userPhotoAndNameStackView.addArrangedSubview($0)
         }
-        
+
         [userDescriptionLabel, userWebsiteLabel].forEach {
             userInfoStackView.addArrangedSubview($0)
         }
-        
+
         NSLayoutConstraint.activate([
             userPhotoAndNameStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             userPhotoAndNameStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             userPhotoAndNameStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            
+
             userInfoStackView.topAnchor.constraint(equalTo: userPhotoAndNameStackView.bottomAnchor, constant: 20),
             userInfoStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             userInfoStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            
+
             tableView.topAnchor.constraint(equalTo: userInfoStackView.bottomAnchor, constant: 40),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -129,11 +135,11 @@ extension ProfileViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 3
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         var label: UILabel
-        
+
         switch indexPath.row {
         case 0:
             label = myNftLabel
@@ -144,16 +150,16 @@ extension ProfileViewController: UITableViewDataSource {
         default:
             label = UILabel()
         }
-        
+
         cell.accessoryView = customAccessoryView()
         cell.contentView.addSubview(label)
-        
+
         NSLayoutConstraint.activate([
             label.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 16),
             label.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -16),
             label.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor)
         ])
-        
+
         return cell
     }
 }
@@ -177,15 +183,24 @@ extension ProfileViewController: UITableViewDelegate {
 
 
 
-
 //import UIKit
 //
 //class ProfileViewController: UIViewController {
 //    
 //    // MARK: - Private Properties
-//    private var viewModel: ProfileViewModel!
+//    private var viewModel: ProfileViewModel?
 //    
-//    private let editButton = Buttons(style: .editButtonStyle)
+//    private lazy var editButton: UIBarButtonItem = {
+//        let buttonImage = UIImage(named: "editButton")?.withRenderingMode(.alwaysOriginal)
+//        let button = UIBarButtonItem(
+//            image: buttonImage,
+//            style: .plain,
+//            target: self,
+//            action: #selector(editButtonTapped)
+//        )
+//        return button
+//    }()
+//    
 //    private let userPhotoImage = ImageViews(style: .userPhotoStyle)
 //    private let userNameLabel = Labels(style: .userNameLabelStyle)
 //    private let userDescriptionLabel = Labels(style: .userDescription)
@@ -208,25 +223,25 @@ extension ProfileViewController: UITableViewDelegate {
 //        setupViewsAndConstraints()
 //        setupTableView()
 //        setupBindings()
-//        setupEditButtonAction()
-//        viewModel.loadData()
+//        setupNavigationBar()
+//        viewModel?.loadData()
 //    }
-//
+//    
 //    // MARK: - Private Methods
 //    private func setupBindings() {
-//        viewModel.onProfileDataUpdated = { [weak self] in
+//        viewModel?.onProfileDataUpdated = { [weak self] in
 //            self?.updateUI()
 //        }
 //    }
-//
+//    
 //    private func updateUI() {
-//        guard let profile = viewModel.userProfile else { return }
+//        guard let profile = viewModel?.userProfile else { return }
 //        userNameLabel.text = profile.userName
 //        userDescriptionLabel.text = profile.userDescription
 //        userWebsiteLabel.text = profile.userWebsite
-//        userPhotoImage.image = profile.userPhoto
-//        myNftLabel.text = "Мои NFT (\(profile.myNftCount))"
-//        favoriteNftLabel.text = "Избранные NFT (\(profile.favoriteNftCount))"
+//        userPhotoImage.image = UIImage(named: profile.userPhoto)
+//        myNftLabel.text = "Мои NFT (\(profile.myNftCount.count))"
+//        favoriteNftLabel.text = "Избранные NFT (\(profile.favoriteNftCount.count))"
 //        tableView.reloadData()
 //    }
 //    
@@ -246,21 +261,17 @@ extension ProfileViewController: UITableViewDelegate {
 //        return accessoryView
 //    }
 //    
-//    private func setupEditButtonAction() {
-//        editButton.addTarget(
-//            self,
-//            action: #selector(editButtonTapped),
-//            for: .touchUpInside
-//        )
+//    private func setupNavigationBar() {
+//        navigationItem.rightBarButtonItem = editButton
 //    }
-//
+//    
 //    // MARK: - Event Handler (Actions)
 //    @objc private func editButtonTapped() {
-//        guard let profile = viewModel.userProfile else { return }
+//        guard let profile = viewModel?.userProfile else { return }
 //        let profileEditorVC = ProfileEditorViewController()
 //        profileEditorVC.viewModel = ProfileEditorViewModel(profile: profile)
 //        profileEditorVC.onProfileUpdated = { [weak self] updatedProfile in
-//            self?.viewModel.userProfile = updatedProfile
+//            self?.viewModel?.userProfile = updatedProfile
 //        }
 //        present(profileEditorVC, animated: true, completion: nil)
 //    }
@@ -269,7 +280,7 @@ extension ProfileViewController: UITableViewDelegate {
 //// MARK: - Layout
 //extension ProfileViewController {
 //    private func setupViewsAndConstraints() {
-//        [editButton, userPhotoAndNameStackView, userInfoStackView, tableView].forEach {
+//        [userPhotoAndNameStackView, userInfoStackView, tableView].forEach {
 //            view.addSubview($0)
 //        }
 //        
@@ -282,10 +293,7 @@ extension ProfileViewController: UITableViewDelegate {
 //        }
 //        
 //        NSLayoutConstraint.activate([
-//            editButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 2),
-//            editButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -9),
-//            
-//            userPhotoAndNameStackView.topAnchor.constraint(equalTo: editButton.bottomAnchor, constant: 20),
+//            userPhotoAndNameStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
 //            userPhotoAndNameStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
 //            userPhotoAndNameStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
 //            
@@ -342,12 +350,9 @@ extension ProfileViewController: UITableViewDelegate {
 //        switch indexPath.row {
 //        case 0:
 //            let myNFTViewController = MyNFTViewController()
-//            myNFTViewController.modalPresentationStyle = .fullScreen
-//            present(myNFTViewController, animated: true)
+//            navigationController?.pushViewController(myNFTViewController, animated: true)
 //        default:
 //            break
 //        }
 //    }
 //}
-
-

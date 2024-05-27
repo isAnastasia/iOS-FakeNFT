@@ -6,30 +6,30 @@
 //
 
 import UIKit
+import Kingfisher
 
 class MyNFTTableViewCell: UITableViewCell {
-
+    
     // MARK: - Static Properties
     static let reuseIdentifier = "MyNFTTableViewCell"
     
     // MARK: - Public properties
     
-    
     // MARK: - Private Properties
-    private let cellHeight: CGFloat = 75
+    private let cellHeight: CGFloat = 140
+    
+    private let myNFTPriceLabel = Labels(style: .myNFTPriceLabelStyle)
+    private let myNFTAuthorLabel = Labels(style: .myNFTAuthorLabelStyle)
+    private var myNFTValuePriceLabel = Labels(style: .bold17LabelStyle)
+    private var myNFTNameLabel = Labels(style: .bold17LabelStyle)
     
     private var myNFTImage = ImageViews(style: .myNFTStyle)
-    private var myNFTNameLabel = Labels(style: .bold17LabelStyle)
-    private var myNFTRatingImage = ImageViews(style: .myNFTRating)
-    private let fromLabel = Labels(style: .fromLabelStyle)
-    private var myNFTAuthorLabel = Labels(style: .regular13LabelStyle)
-    private let myNFTPriceLabel = Labels(style: .regular13LabelStyle)
-    private var myNFTValuePriceLabel = Labels(style: .bold17LabelStyle)
+    private var myNFTLikeImage = ImageViews(style: .myNFTLikeStyle)
     
-    private let myNFTDescriptionStackView = StackViews(style: .vertical4Style)
-    private let myNFTPriceStackView = StackViews(style: .vertical2Style)
-    private let myNFTAuthorStackView = StackViews(style: .horizontal4Style)
+    private var myNFTRatingImage = MyNFTRating()
     
+    private let myNFTDescriptionStackView = StackViews(style: .myNFTDescriptionStyle)
+    private let myNFTPriceStackView = StackViews(style: .myNFTPriceStyle)
     
     // MARK: - Initializers
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -42,22 +42,33 @@ class MyNFTTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Provate Methods
+    // MARK: - Public Methods
     func configure(with myNFT: MyNFTModel) {
-        self.myNFTImage.image = UIImage(named: myNFT.myNFTImage)
-        self.myNFTNameLabel.text = myNFT.myNFTName
-        self.myNFTRatingImage.image = UIImage(named: myNFT.myNFTRating)
-        self.myNFTAuthorLabel.text = myNFT.myNFTAuthor
-        self.myNFTValuePriceLabel.text = myNFT.myNFTPrice
+        loadNFTImage(from: myNFT.myNFTImages.first)
+        myNFTNameLabel.text = myNFT.myNFTName
+        myNFTValuePriceLabel.text = formattedPrice(from: myNFT.myNFTPrice)
+        myNFTRatingImage.setupRating(rating: myNFT.myNFTRating)
     }
+    
+    // MARK: - Private Methods
+    private func loadNFTImage(from imageName: String?) {
+        guard let imageName = imageName else { return }
+        myNFTImage.image = UIImage(named: imageName)
+    }
+    
+    private func formattedPrice(from price: Double) -> String {
+        return String(format: "%.2f ETH", price).replacingOccurrences(of: ".", with: ",")
+    }
+}
 
+extension MyNFTTableViewCell {
     // MARK: - Layout
     private func setupViewsAndConstraints() {
-        [myNFTImage, myNFTDescriptionStackView, myNFTPriceStackView].forEach {
+        [myNFTImage, myNFTLikeImage, myNFTDescriptionStackView, myNFTPriceStackView].forEach {
             contentView.addSubview($0)
         }
         
-        [myNFTNameLabel, myNFTRatingImage, myNFTAuthorStackView].forEach {
+        [myNFTNameLabel, myNFTRatingImage, myNFTAuthorLabel].forEach {
             myNFTDescriptionStackView.addArrangedSubview($0)
         }
         
@@ -68,16 +79,17 @@ class MyNFTTableViewCell: UITableViewCell {
         NSLayoutConstraint.activate([
             myNFTImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
             myNFTImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            myNFTImage.trailingAnchor.constraint(equalTo: myNFTDescriptionStackView.leadingAnchor, constant: -16),
+            myNFTImage.trailingAnchor.constraint(equalTo: myNFTDescriptionStackView.leadingAnchor, constant: -20),
             myNFTImage.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
             
-            myNFTDescriptionStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            myNFTDescriptionStackView.trailingAnchor.constraint(equalTo: myNFTPriceStackView.leadingAnchor, constant: -16),
-            myNFTDescriptionStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
+            myNFTLikeImage.topAnchor.constraint(equalTo: myNFTImage.topAnchor, constant: 0),
+            myNFTLikeImage.trailingAnchor.constraint(equalTo: myNFTImage.trailingAnchor, constant: 0),
             
-            myNFTPriceStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            myNFTPriceStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            myNFTPriceStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
+            myNFTDescriptionStackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            myNFTDescriptionStackView.trailingAnchor.constraint(equalTo: myNFTPriceStackView.leadingAnchor, constant: -39),
+            
+            myNFTPriceStackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }
 }
+
