@@ -1,6 +1,7 @@
 import UIKit
 
-final class TestCatalogViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+final class TestCatalogViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, ErrorView, LoadingView {
+    internal lazy var activityIndicator = UIActivityIndicatorView()
     
     let servicesAssembly: ServicesAssembly
     var collectionsViewModel = CatalogCollectionsViewModel()
@@ -29,21 +30,24 @@ final class TestCatalogViewController: UIViewController, UITableViewDataSource, 
             guard let self = self else {return}
             self.tableView.reloadData()
         }
-//        view.addSubview(testNftButton)
-//        testNftButton.constraintCenters(to: view)
-//        testNftButton.setTitle(Constants.openNftTitle, for: .normal)
-//        testNftButton.addTarget(self, action: #selector(showNft), for: .touchUpInside)
-//        testNftButton.setTitleColor(.systemBlue, for: .normal)
+        
+        collectionsViewModel.errorBinding = { [weak self] in
+            guard let self = self else {return}
+            self.showErrorAlert()
+        }
+        
+        collectionsViewModel.showLoadingHandler = { [weak self] in
+            guard let self = self else {return}
+            self.showLoading()
+        }
+        
+        collectionsViewModel.hideLoadingHandler = { [weak self] in
+            guard let self = self else {return}
+            self.hideLoading()
+        }
+        collectionsViewModel.fetchCollections()
     }
     //MARK: - Actions
-    @objc
-    func showNft() {
-        let assembly = NftDetailAssembly(servicesAssembler: servicesAssembly)
-        let nftInput = NftDetailInput(id: Constants.testNftId)
-        let nftViewController = assembly.build(with: nftInput)
-        present(nftViewController, animated: true)
-    }
-    
     @objc
     func filterCollections() {
         let alert = UIAlertController(
@@ -88,11 +92,14 @@ final class TestCatalogViewController: UIViewController, UITableViewDataSource, 
     
     //MARK: - Delegate
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 179+8
+        return 179 + 8
     }
     
     //MARK: - Setting Up UI
     private func initTableView() {
+        tableView.addSubview(activityIndicator)
+        activityIndicator.constraintCenters(to: tableView)
+        
         tableView.register(CatalogTableViewCell.self, forCellReuseIdentifier: CatalogTableViewCell.identifier)
         tableView.dataSource = self
         tableView.delegate = self
@@ -117,9 +124,15 @@ final class TestCatalogViewController: UIViewController, UITableViewDataSource, 
         navigationBar?.topItem?.rightBarButtonItem = addButton
     }
     
-}
-
-private enum Constants {
-    static let openNftTitle = NSLocalizedString("Catalog.openNft", comment: "")
-    static let testNftId = "22"
+    private func showErrorAlert() {
+        let alert = UIAlertController(
+            title: NSLocalizedString("Error.title", comment: ""),
+            message: NSLocalizedString("Error.network", comment: ""),
+            preferredStyle: .alert)
+        alert.addAction(UIAlertAction(
+            title: NSLocalizedString("Ok", comment: ""),
+            style: .cancel,
+            handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
 }

@@ -6,9 +6,14 @@
 //
 
 import Foundation
+import ProgressHUD
+import UIKit
 
 final class CatalogCollectionsViewModel {
     var collectionsBinding: Binding<[CatalogSingleCollectionViewModel]>?
+    var errorBinding: (() -> ())?
+    var showLoadingHandler: (() -> ())?
+    var hideLoadingHandler: (() -> ())?
 
     private(set) var collections: [CatalogSingleCollectionViewModel] = []{
         didSet {
@@ -25,7 +30,7 @@ final class CatalogCollectionsViewModel {
     
     init(provider: CatalogCollectionsProvider) {
         self.provider = provider
-        self.fetchCollections()
+        //self.fetchCollections()
     }
     
     func filterCollectionsByName() {
@@ -48,8 +53,9 @@ final class CatalogCollectionsViewModel {
         }
     }
     
-    private func fetchCollections() {
+    func fetchCollections() {
         var convertedCollections: [CatalogSingleCollectionViewModel] = []
+        showLoadingHandler?()
         provider.getCollections { [weak self] result in
             switch result {
             case .success(let nftCollectionsResult):
@@ -60,7 +66,13 @@ final class CatalogCollectionsViewModel {
                         nftCount: collection.nfts.count))
                 }
                 self?.collections = convertedCollections
+                self?.hideLoadingHandler?()
             case .failure(let error):
+                guard let self = self else {
+                    return
+                }
+                self.hideLoadingHandler?()
+                self.errorBinding?()
                 print(error)
             }
         }
