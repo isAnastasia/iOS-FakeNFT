@@ -108,7 +108,7 @@ final class CatalogViewController: UIViewController, UITableViewDataSource, UITa
     
     private func setUpNavigationTabBar() {
         navigationBar = navigationController?.navigationBar
-        let addButton = UIBarButtonItem(image: UIImage(systemName: "text.justifyleft"), style: .plain, target: self, action: #selector(filterCollections))
+        let addButton = UIBarButtonItem(image: UIImage(named: "sort.png") ?? UIImage(systemName: "text.justifyleft"), style: .plain, target: self, action: #selector(filterCollections))
         addButton.tintColor = .segmentActive
         navigationBar?.topItem?.rightBarButtonItem = addButton
     }
