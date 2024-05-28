@@ -32,7 +32,7 @@ final class TabBarController: UITabBarController {
                 NSLocalizedString("Tab.catalog", comment: ""),
                 "catalogTabbarNoactive",
                 "catalogTabbarActive",
-                TestCatalogViewController(servicesAssembly: servicesAssembly)
+                CatalogViewController(servicesAssembly: servicesAssembly)
             ),
             (
                 NSLocalizedString("Tab.cart", comment: ""),

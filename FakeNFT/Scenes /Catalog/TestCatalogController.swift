@@ -1,6 +1,6 @@
 import UIKit
 
-final class TestCatalogViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, ErrorView, LoadingView {
+final class CatalogViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, ErrorView, LoadingView {
     internal lazy var activityIndicator = UIActivityIndicatorView()
     
     let servicesAssembly: ServicesAssembly
