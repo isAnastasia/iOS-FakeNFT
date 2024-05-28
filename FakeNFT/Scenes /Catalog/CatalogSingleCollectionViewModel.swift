@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import UIKit
 
 typealias Binding<T> = (T) -> Void
 
@@ -36,5 +35,4 @@ final class CatalogSingleCollectionViewModel {
         let result = name + " (" + String(nftCount) + ")"
         return result
     }
-    
 }

@@ -92,6 +92,5 @@ final class CatalogTableViewCell: UITableViewCell {
             imageCard.layer.masksToBounds = false
             imageCard.clipsToBounds = true
         }
-        
     }
 }

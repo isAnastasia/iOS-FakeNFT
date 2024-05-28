@@ -6,8 +6,6 @@
 //
 
 import Foundation
-import ProgressHUD
-import UIKit
 
 final class CatalogCollectionsViewModel {
     var collectionsBinding: Binding<[CatalogSingleCollectionViewModel]>?

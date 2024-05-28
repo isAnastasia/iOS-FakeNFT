@@ -3,21 +3,10 @@ import UIKit
 final class CatalogViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, ErrorView, LoadingView {
     internal lazy var activityIndicator = UIActivityIndicatorView()
     
-    let servicesAssembly: ServicesAssembly
     var collectionsViewModel = CatalogCollectionsViewModel()
     
-    let testNftButton = UIButton()
     private let tableView = UITableView()
     private var navigationBar: UINavigationBar?
-
-    init(servicesAssembly: ServicesAssembly) {
-        self.servicesAssembly = servicesAssembly
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -124,6 +113,7 @@ final class CatalogViewController: UIViewController, UITableViewDataSource, UITa
         navigationBar?.topItem?.rightBarButtonItem = addButton
     }
     
+    //MARK: - Error Alert
     private func showErrorAlert() {
         let alert = UIAlertController(
             title: NSLocalizedString("Error.title", comment: ""),

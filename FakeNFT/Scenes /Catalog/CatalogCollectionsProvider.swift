@@ -6,24 +6,6 @@
 //
 
 import Foundation
-import UIKit
-
-struct NFTCollectionRequest: NetworkRequest {
-    let baseUrl = NetworkConstants.baseURL
-    var endpoint: URL? {
-        URL(string: "\(baseUrl)/api/v1/collections")
-    }
-    var httpMethod: HttpMethod {
-        .get
-    }
-}
-
-struct NftCollection: Decodable {
-    let id: String
-    let nfts: [String]
-    let name: String
-    let cover: String
-}
 
 typealias NftCollectionCompletion = (Result<[NftCollection], Error>) -> Void
 

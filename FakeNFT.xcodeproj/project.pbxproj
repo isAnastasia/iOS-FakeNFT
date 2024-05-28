@@ -26,6 +26,8 @@
 		0CFCB7492A7808900009A829 /* TestCatalogController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFCB7482A7808900009A829 /* TestCatalogController.swift */; };
 		0CFCB74B2A780EA80009A829 /* UIView+Constraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFCB74A2A780EA80009A829 /* UIView+Constraints.swift */; };
 		0CFCB74E2A7817DC0009A829 /* NftStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFCB74D2A7817DC0009A829 /* NftStorage.swift */; };
+		330E7DF02C05CA66003FF1AF /* NFTCollectionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330E7DEF2C05CA66003FF1AF /* NFTCollectionRequest.swift */; };
+		330E7DF22C05CA9C003FF1AF /* NftCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330E7DF12C05CA9C003FF1AF /* NftCollection.swift */; };
 		3338C5902C02390200256636 /* CatalogTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3338C58F2C02390200256636 /* CatalogTableViewCell.swift */; };
 		3338C5942C028FAE00256636 /* CatalogCollectionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3338C5932C028FAE00256636 /* CatalogCollectionsViewModel.swift */; };
 		3338C5962C02910A00256636 /* CatalogSingleCollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3338C5952C02910A00256636 /* CatalogSingleCollectionViewModel.swift */; };
@@ -91,6 +93,8 @@
 		0CFCB7482A7808900009A829 /* TestCatalogController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestCatalogController.swift; sourceTree = "<group>"; };
 		0CFCB74A2A780EA80009A829 /* UIView+Constraints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Constraints.swift"; sourceTree = "<group>"; };
 		0CFCB74D2A7817DC0009A829 /* NftStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftStorage.swift; sourceTree = "<group>"; };
+		330E7DEF2C05CA66003FF1AF /* NFTCollectionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTCollectionRequest.swift; sourceTree = "<group>"; };
+		330E7DF12C05CA9C003FF1AF /* NftCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftCollection.swift; sourceTree = "<group>"; };
 		3338C58F2C02390200256636 /* CatalogTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogTableViewCell.swift; sourceTree = "<group>"; };
 		3338C5932C028FAE00256636 /* CatalogCollectionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogCollectionsViewModel.swift; sourceTree = "<group>"; };
 		3338C5952C02910A00256636 /* CatalogSingleCollectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogSingleCollectionViewModel.swift; sourceTree = "<group>"; };
@@ -220,6 +224,8 @@
 				3338C5932C028FAE00256636 /* CatalogCollectionsViewModel.swift */,
 				3338C5952C02910A00256636 /* CatalogSingleCollectionViewModel.swift */,
 				3338C5972C0293E600256636 /* CatalogCollectionsProvider.swift */,
+				330E7DEF2C05CA66003FF1AF /* NFTCollectionRequest.swift */,
+				330E7DF12C05CA9C003FF1AF /* NftCollection.swift */,
 			);
 			path = Catalog;
 			sourceTree = "<group>";
@@ -578,9 +584,11 @@
 				0CF2C2DD2A783CE600FDC837 /* ErrorView.swift in Sources */,
 				0C79EE682A76DE0900EE90EA /* NftDetailPresenter.swift in Sources */,
 				3F68069B29CBBAF100B4F915 /* ProductDetailsTableViewController.swift in Sources */,
+				330E7DF02C05CA66003FF1AF /* NFTCollectionRequest.swift in Sources */,
 				0CFCB7402A78002A0009A829 /* NftService.swift in Sources */,
 				3338C5942C028FAE00256636 /* CatalogCollectionsViewModel.swift in Sources */,
 				04A4EB2E2C00D6A400773683 /* ProfileViewController.swift in Sources */,
+				330E7DF22C05CA9C003FF1AF /* NftCollection.swift in Sources */,
 				3338C5982C0293E600256636 /* CatalogCollectionsProvider.swift in Sources */,
 				3F6806D529CBBEC700B4F915 /* NetworkTask.swift in Sources */,
 				0CF2C2DB2A783C1B00FDC837 /* LoadingView.swift in Sources */,
