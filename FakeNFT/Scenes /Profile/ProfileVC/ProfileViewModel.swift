@@ -7,7 +7,9 @@
 
 import UIKit
 
-class ProfileViewModel {
+final class ProfileViewModel {
+    
+    // MARK: - Public Properties
     var userProfile: UserProfileModel? {
         didSet {
             updateProfileData()
@@ -15,16 +17,22 @@ class ProfileViewModel {
     }
     
     var onProfileDataUpdated: (() -> Void)?
+    var onLoadingStatusChanged: ((Bool) -> Void)?
     
+    // MARK: - Initializers
     init() {
         loadData()
     }
     
+    // MARK: - Public Methods
     func loadData() {
+        onLoadingStatusChanged?(true)
+        
         let networkClient = DefaultNetworkClient()
         let request = ProfileRequest()
         
         networkClient.send(request: request, type: UserProfileModel.self) { [weak self] result in
+            self?.onLoadingStatusChanged?(false)
             switch result {
             case .success(let profile):
                 self?.userProfile = profile
@@ -47,67 +55,33 @@ class ProfileViewModel {
         }
     }
     
+    func saveProfileData(completion: @escaping (Result<UserProfileModel, Error>) -> Void) {
+        guard let profile = userProfile else { return }
+
+        let networkClient = DefaultNetworkClient()
+        
+        var encodedLikes = profile.likes.map { String($0) }.joined(separator: ",")
+        if encodedLikes.isEmpty {
+            encodedLikes = "null"
+        }
+        
+        let profileData = "name=\(profile.name)&description=\(profile.description)&website=\(profile.website)&avatar=\(profile.avatar)&likes=\(encodedLikes)"
+        
+        let request = UpdateProfileRequest.init(profileData)
+
+        networkClient.send(request: request, type: UserProfileModel.self) { result in
+            switch result {
+            case .success(let updatedProfile):
+                self.userProfile = updatedProfile
+                completion(.success(updatedProfile))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    // MARK: - Private Properties
     private func updateProfileData() {
         onProfileDataUpdated?()
     }
 }
-
-
-
-
-
-
-
-//import UIKit
-//
-//class ProfileViewModel {
-//    
-//    // MARK: - Public Properties
-//    var userProfile: UserProfileModel? {
-//        didSet {
-//            updateProfileData()
-//        }
-//    }
-//    
-//    var onProfileDataUpdated: (() -> Void)?
-//    
-//    // MARK: - Initializers
-//    init() {
-//        loadData()
-//    }
-//    
-//    // MARK: - Public Methods
-//    func loadData() {
-//        if let savedProfile = ProfileEditorViewModel.loadProfileData() {
-//            userProfile = savedProfile
-//        } else {
-//            userProfile = UserProfileModel(
-//                userName: "Joaquin Phoenix",
-//                userDescription: """
-//                    Дизайнер из Казани, люблю цифровое искусство и бейглы. В моей коллекции уже 100+ NFT, и еще больше — на моём сайте. Открыт к коллаборациям.
-//                    """,
-//                userWebsite: "JoaquinPhoenix.com",
-//                userPhoto: "userPhoto",
-//                myNftCount: ["NFT1", "NFT2"],
-//                favoriteNftCount: ["NFT1"]
-//            )
-//        }
-//    }
-//    
-//    func updateMyNftCount(_ count: [String]) {
-//        if let profile = userProfile {
-//            userProfile = profile.updateMyNftCount(count)
-//        }
-//    }
-//    
-//    func updateFavoriteNftCount(_ count: [String]) {
-//        if let profile = userProfile {
-//            userProfile = profile.updateFavoriteNftCount(count)
-//        }
-//    }
-//    
-//    // MARK: - Private Methods
-//    private func updateProfileData() {
-//        onProfileDataUpdated?()
-//    }
-//}

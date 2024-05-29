@@ -9,6 +9,7 @@ import UIKit
 
 enum StackViewStyle {
     case vertical8Style
+    case vertical8Style2
     case horizontal16Style
     case vertical24Style
     case vertical4Style
@@ -16,6 +17,7 @@ enum StackViewStyle {
     case horizontal4Style
     case myNFTDescriptionStyle
     case myNFTPriceStyle
+    case vertical4Style2
 }
 
 final class StackViews: UIStackView {
@@ -38,6 +40,11 @@ final class StackViews: UIStackView {
             self.spacing = 8
             self.alignment = .fill
             self.distribution = .fill
+        case .vertical8Style2:
+            self.axis = .vertical
+            self.spacing = 8
+            self.alignment = .leading
+            self.distribution = .equalSpacing
         case .vertical24Style:
             self.axis = .vertical
             self.spacing = 24
@@ -53,6 +60,11 @@ final class StackViews: UIStackView {
             self.spacing = 4
             self.alignment = .fill
             self.distribution = .fill
+        case .vertical4Style2:
+            self.axis = .vertical
+            self.spacing = 4
+            self.distribution = .equalSpacing
+            self.alignment = .leading
         case .vertical2Style:
             self.axis = .vertical
             self.spacing = 2

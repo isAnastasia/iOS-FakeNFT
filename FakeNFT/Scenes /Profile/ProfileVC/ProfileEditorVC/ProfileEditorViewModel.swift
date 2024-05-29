@@ -7,118 +7,64 @@
 
 import UIKit
 
-class ProfileEditorViewModel {
-    var userProfile: UserProfileModel? {
-        didSet {
-            saveProfileData()
-        }
-    }
+final class ProfileEditorViewModel {
     
+    // MARK: - Public Properties
+    var userProfile: UserProfileModel?
+    
+    // MARK: - Initializers
     init(profile: UserProfileModel?) {
         self.userProfile = profile
     }
     
+    // MARK: - Public Methods
     func updateUserName(_ name: String) {
         guard let profile = userProfile else { return }
+        print("Updating user name to: \(name)")
         userProfile = profile.updateUserName(name)
-        saveProfileData()
     }
     
     func updateUserDescription(_ description: String) {
         guard let profile = userProfile else { return }
+        print("Updating user description to: \(description)")
         userProfile = profile.updateUserDescription(description)
-        saveProfileData()
     }
     
     func updateUserWebsite(_ website: String) {
         guard let profile = userProfile else { return }
+        print("Updating user website to: \(website)")
         userProfile = profile.updateUserWebsite(website)
-        saveProfileData()
     }
     
-    private func saveProfileData() {
+    func saveProfileData(completion: @escaping (Result<UserProfileModel, Error>) -> Void) {
         guard let profile = userProfile else { return }
         
         let networkClient = DefaultNetworkClient()
-        let request = UpdateProfileRequest(dto: profile)
+        
+        var encodedLikes = profile.likes.map { String($0) }.joined(separator: ",")
+        if encodedLikes.isEmpty {
+            encodedLikes = "null"
+        }
+        let profileData = "name=\(profile.name)&description=\(profile.description)&website=\(profile.website)&avatar=\(profile.avatar)"
+        
+        let request = UpdateProfileRequest(profileData)
+        
+        print("Отправка запроса на сервер для сохранения профиля: \(profile)")
         
         networkClient.send(request: request, type: UserProfileModel.self) { result in
             switch result {
             case .success(let updatedProfile):
                 self.userProfile = updatedProfile
-                print("Profile updated successfully: \(updatedProfile)")
+                print("Профиль успешно обновлен на сервере: \(updatedProfile)")
+                completion(.success(updatedProfile))
             case .failure(let error):
-                print("Failed to update profile: \(error)")
+                if let httpResponse = error as? NetworkClientError,
+                   case .httpStatusCode(let statusCode) = httpResponse {
+                    print("HTTP Status Code: \(statusCode)")
+                }
+                print("Ошибка при сохранении профиля на сервере: \(error)")
+                completion(.failure(error))
             }
         }
     }
 }
-
-
-
-
-
-
-
-
-//import UIKit
-//
-//class ProfileEditorViewModel {
-//    var userProfile: UserProfileModel? {
-//        didSet {
-//            saveProfileData()
-//        }
-//    }
-//    
-//    init(profile: UserProfileModel?) {
-//        self.userProfile = profile
-//    }
-//    
-//    func updateUserName(_ name: String) {
-//        guard let profile = userProfile else { return }
-//        userProfile = profile.updateUserName(name)
-//        saveProfileData()
-//    }
-//    
-//    func updateUserDescription(_ description: String) {
-//        guard let profile = userProfile else { return }
-//        userProfile = profile.updateUserDescription(description)
-//        saveProfileData()
-//    }
-//    
-//    func updateUserWebsite(_ website: String) {
-//        guard let profile = userProfile else { return }
-//        userProfile = profile.updateUserWebsite(website)
-//        saveProfileData()
-//    }
-//    
-//    private func saveProfileData() {
-//        guard let profile = userProfile else { return }
-//        let defaults = UserDefaults.standard
-//        defaults.set(profile.userName, forKey: "userName")
-//        defaults.set(profile.userDescription, forKey: "userDescription")
-//        defaults.set(profile.userWebsite, forKey: "userWebsite")
-//        // Сохранение других данных
-//    }
-//    
-//    static func loadProfileData() -> UserProfileModel? {
-//        let defaults = UserDefaults.standard
-//        guard
-//            let userName = defaults.string(forKey: "userName"),
-//            let userDescription = defaults.string(forKey: "userDescription"),
-//            let userWebsite = defaults.string(forKey: "userWebsite"),
-//            let userPhoto = defaults.string(forKey: "userPhoto")
-//        else {
-//            return nil
-//        }
-//        return UserProfileModel(
-//            userName: userName,
-//            userDescription: userDescription,
-//            userWebsite: userWebsite,
-//            userPhoto: userPhoto,
-//            myNftCount: defaults.array(forKey: "myNftCount") as? [String] ?? [],
-//            favoriteNftCount: defaults.array(forKey: "favoriteNftCount") as? [String] ?? []
-//        )
-//    }
-//}
-//

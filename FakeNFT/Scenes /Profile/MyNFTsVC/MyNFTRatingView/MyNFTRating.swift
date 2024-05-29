@@ -7,7 +7,7 @@
 
 import UIKit
 
-class MyNFTRating: UIStackView {
+final class MyNFTRating: UIStackView {
     
     // MARK: - Private Properties
     private lazy var yellowStarsImage: UIImage? = UIImage(named: "NFTRatingYellow")

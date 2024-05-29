@@ -7,11 +7,12 @@
 
 import UIKit
 
-class MyNFTViewController: UIViewController {
+final class MyNFTViewController: UIViewController {
     
     // MARK: - Properties
     private var viewModel: MyNFTViewModel!
     private let tableView = UITableView()
+    private let stubLabel = Labels(style: .bold17LabelStyle, text: "У Вас ещё нет NFT")
     
     // MARK: - View Lifecycle
     override func viewDidLoad() {
@@ -20,6 +21,7 @@ class MyNFTViewController: UIViewController {
         view.backgroundColor = .systemBackground
         setupNavigationBar()
         setupTableView()
+        setupStubLabel()
         bindViewModel()
         viewModel.loadMockData()
     }
@@ -27,7 +29,7 @@ class MyNFTViewController: UIViewController {
     // MARK: - Private Methods
     private func bindViewModel() {
         viewModel.onNFTsUpdated = { [weak self] in
-            self?.tableView.reloadData()
+            self?.updateView()
         }
     }
     
@@ -35,15 +37,25 @@ class MyNFTViewController: UIViewController {
         navigationItem.title = "Мои NFT"
         
         let backButtonImage = UIImage(systemName: "chevron.left")?.withRenderingMode(.alwaysOriginal)
-        let backBarButtonItem = UIBarButtonItem(image: backButtonImage, style: .plain, target: self, action: #selector(backButtonTapped))
+        let backBarButtonItem = UIBarButtonItem(
+            image: backButtonImage,
+            style: .plain,
+            target: self,
+            action: #selector(backButtonTapped)
+        )
         
         let sortButtonImage = UIImage(named: "sortButton")?.withRenderingMode(.alwaysOriginal)
-        let sortBarButtonItem = UIBarButtonItem(image: sortButtonImage, style: .plain, target: self, action: nil)
+        let sortBarButtonItem = UIBarButtonItem(
+            image: sortButtonImage, 
+            style: .plain,
+            target: self,
+            action: #selector(sortButtonTapped)
+        )
         
         navigationItem.leftBarButtonItem = backBarButtonItem
         navigationItem.rightBarButtonItem = sortBarButtonItem
         
-        navigationController?.navigationBar.tintColor = .black
+        navigationController?.navigationBar.tintColor = .blackDay
     }
     
     private func setupTableView() {
@@ -61,9 +73,47 @@ class MyNFTViewController: UIViewController {
         ])
     }
     
+    private func setupStubLabel() {
+        stubLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(stubLabel)
+        
+        NSLayoutConstraint.activate([
+            stubLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            stubLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+    
+    private func updateView() {
+        if viewModel.numberOfNFTs() == 0 {
+            tableView.isHidden = true
+            stubLabel.isHidden = false
+        } else {
+            tableView.isHidden = false
+            stubLabel.isHidden = true
+        }
+        tableView.reloadData()
+    }
+    
     // MARK: - Event Handler (Actions)
     @objc private func backButtonTapped() {
         navigationController?.popViewController(animated: true)
+    }
+    
+    @objc private func sortButtonTapped() {
+        let actions = [
+            SortAction(title: "По цене") { [weak self] in
+                self?.viewModel.sortByPrice()
+            },
+            SortAction(title: "По рейтингу") { [weak self] in
+                self?.viewModel.sortByRating()
+            },
+            SortAction(title: "По названию") { [weak self] in
+                self?.viewModel.sortByName()
+            }
+        ]
+        
+        let sortAlert = MyNFTSortAlert().showSortingAlert(actions: actions)
+        present(sortAlert, animated: true, completion: nil)
     }
 }
 
@@ -74,7 +124,10 @@ extension MyNFTViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: MyNFTTableViewCell.reuseIdentifier, for: indexPath) as? MyNFTTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: MyNFTTableViewCell.reuseIdentifier,
+            for: indexPath
+        ) as? MyNFTTableViewCell else {
             return UITableViewCell()
         }
         if let nft = viewModel.getNFT(at: indexPath.row) {
@@ -83,3 +136,4 @@ extension MyNFTViewController: UITableViewDataSource {
         return cell
     }
 }
+

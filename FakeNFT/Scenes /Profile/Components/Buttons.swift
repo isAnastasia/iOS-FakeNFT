@@ -13,6 +13,8 @@ enum ButtonsStyle {
     case userPhotoEditor
     case backButtonStyle
     case sortButtonStyle
+    case smallLikeButtonStyle
+    case largeLikeButtonStyle
 }
 
 final class Buttons: UIButton {
@@ -52,6 +54,14 @@ final class Buttons: UIButton {
             self.heightAnchor.constraint(equalToConstant: 24).isActive = true
         case .sortButtonStyle:
             self.setImage(UIImage(named: "sortButton"), for: .normal)
+            self.widthAnchor.constraint(equalToConstant: 42).isActive = true
+            self.heightAnchor.constraint(equalToConstant: 42).isActive = true
+        case .smallLikeButtonStyle:
+            self.setImage(UIImage(named: "favouriteIconWhite"), for: .normal)
+            self.widthAnchor.constraint(equalToConstant: 40).isActive = true
+            self.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        case .largeLikeButtonStyle:
+            self.setImage(UIImage(named: "favouriteIconRed"), for: .normal)
             self.widthAnchor.constraint(equalToConstant: 42).isActive = true
             self.heightAnchor.constraint(equalToConstant: 42).isActive = true
         }

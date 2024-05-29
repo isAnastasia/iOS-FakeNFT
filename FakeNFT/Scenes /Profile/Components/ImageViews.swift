@@ -11,7 +11,9 @@ enum ImagesStyle {
     case userPhotoStyle
     case backgroundStyle
     case myNFTStyle
+    case myNFTStyle2
     case myNFTLikeStyle
+    case aboutDeveloperStyle
 }
 
 final class ImageViews: UIImageView {
@@ -45,11 +47,18 @@ final class ImageViews: UIImageView {
             self.widthAnchor.constraint(equalToConstant: 108).isActive = true
             self.heightAnchor.constraint(equalToConstant: 108).isActive = true
             self.layer.cornerRadius = 12
+        case .myNFTStyle2:
+            self.widthAnchor.constraint(equalToConstant: 80).isActive = true
+            self.heightAnchor.constraint(equalToConstant: 80).isActive = true
+            self.layer.cornerRadius = 12
         case .myNFTLikeStyle:
             self.widthAnchor.constraint(equalToConstant: 40).isActive = true
             self.heightAnchor.constraint(equalToConstant: 40).isActive = true
             self.layer.cornerRadius = 12
             self.image = UIImage(named: "favouriteIconWhite")
+        case .aboutDeveloperStyle:
+            self.image = UIImage(named: "aboutDeveloper")
+            self.contentMode = .scaleAspectFit
         }
         self.translatesAutoresizingMaskIntoConstraints = false
         self.clipsToBounds = true

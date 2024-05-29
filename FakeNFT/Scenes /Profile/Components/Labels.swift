@@ -12,6 +12,7 @@ enum LabelsStyle {
     case userDescription
     case userWebsite
     case bold17LabelStyle
+    case regular15LabelStyle
     case aboutDeveloperLabel
     case nameLabelStyle
     case descriptionLabelStyle
@@ -51,6 +52,10 @@ final class Labels: UILabel {
             self.textColor = .blueUniversal
         case .bold17LabelStyle:
             self.font = UIFont.boldSystemFont(ofSize: 17)
+            self.text = text
+            self.textColor = .blackDay
+        case .regular15LabelStyle:
+            self.font = UIFont.systemFont(ofSize: 13, weight: .regular)
             self.text = text
             self.textColor = .blackDay
         case .aboutDeveloperLabel:

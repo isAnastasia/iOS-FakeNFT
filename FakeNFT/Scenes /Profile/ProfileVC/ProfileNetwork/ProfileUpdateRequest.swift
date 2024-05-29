@@ -12,5 +12,16 @@ struct UpdateProfileRequest: NetworkRequest {
         URL(string: "\(NetworkConstants.baseURL)/api/v1/profile/1")
     }
     var httpMethod: HttpMethod { .put }
-    var dto: UserProfileModel?
+    
+    var dto: Encodable?
+    
+    var httpBody: String?
+
+    init(_ httpBody: String) {
+        self.httpBody = httpBody
+    }
 }
+
+
+
+

@@ -8,7 +8,7 @@
 import UIKit
 import Kingfisher
 
-class MyNFTTableViewCell: UITableViewCell {
+final class MyNFTTableViewCell: UITableViewCell {
     
     // MARK: - Static Properties
     static let reuseIdentifier = "MyNFTTableViewCell"
@@ -18,13 +18,14 @@ class MyNFTTableViewCell: UITableViewCell {
     // MARK: - Private Properties
     private let cellHeight: CGFloat = 140
     
-    private let myNFTPriceLabel = Labels(style: .myNFTPriceLabelStyle)
-    private let myNFTAuthorLabel = Labels(style: .myNFTAuthorLabelStyle)
-    private var myNFTValuePriceLabel = Labels(style: .bold17LabelStyle)
     private var myNFTNameLabel = Labels(style: .bold17LabelStyle)
+    private let myNFTAuthorLabel = Labels(style: .myNFTAuthorLabelStyle)
+    
+    private let myNFTPriceLabel = Labels(style: .myNFTPriceLabelStyle)
+    private var myNFTValuePriceLabel = Labels(style: .bold17LabelStyle)
     
     private var myNFTImage = ImageViews(style: .myNFTStyle)
-    private var myNFTLikeImage = ImageViews(style: .myNFTLikeStyle)
+    private var myNFTLikeButton = Buttons(style: .smallLikeButtonStyle)
     
     private var myNFTRatingImage = MyNFTRating()
     
@@ -44,10 +45,10 @@ class MyNFTTableViewCell: UITableViewCell {
     
     // MARK: - Public Methods
     func configure(with myNFT: MyNFTModel) {
-        loadNFTImage(from: myNFT.myNFTImages.first)
-        myNFTNameLabel.text = myNFT.myNFTName
-        myNFTValuePriceLabel.text = formattedPrice(from: myNFT.myNFTPrice)
-        myNFTRatingImage.setupRating(rating: myNFT.myNFTRating)
+        loadNFTImage(from: myNFT.images.first)
+        myNFTNameLabel.text = myNFT.name
+        myNFTValuePriceLabel.text = formattedPrice(from: myNFT.price)
+        myNFTRatingImage.setupRating(rating: myNFT.rating)
     }
     
     // MARK: - Private Methods
@@ -64,7 +65,7 @@ class MyNFTTableViewCell: UITableViewCell {
 extension MyNFTTableViewCell {
     // MARK: - Layout
     private func setupViewsAndConstraints() {
-        [myNFTImage, myNFTLikeImage, myNFTDescriptionStackView, myNFTPriceStackView].forEach {
+        [myNFTImage, myNFTLikeButton, myNFTDescriptionStackView, myNFTPriceStackView].forEach {
             contentView.addSubview($0)
         }
         
@@ -82,8 +83,8 @@ extension MyNFTTableViewCell {
             myNFTImage.trailingAnchor.constraint(equalTo: myNFTDescriptionStackView.leadingAnchor, constant: -20),
             myNFTImage.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
             
-            myNFTLikeImage.topAnchor.constraint(equalTo: myNFTImage.topAnchor, constant: 0),
-            myNFTLikeImage.trailingAnchor.constraint(equalTo: myNFTImage.trailingAnchor, constant: 0),
+            myNFTLikeButton.topAnchor.constraint(equalTo: myNFTImage.topAnchor, constant: 0),
+            myNFTLikeButton.trailingAnchor.constraint(equalTo: myNFTImage.trailingAnchor, constant: 0),
             
             myNFTDescriptionStackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             myNFTDescriptionStackView.trailingAnchor.constraint(equalTo: myNFTPriceStackView.leadingAnchor, constant: -39),

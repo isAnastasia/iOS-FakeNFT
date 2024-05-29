@@ -114,28 +114,36 @@ struct DefaultNetworkClient: NetworkClient {
             assertionFailure("Empty endpoint")
             return nil
         }
-
+        
         var urlRequest = URLRequest(url: endpoint)
         urlRequest.httpMethod = request.httpMethod.rawValue
-
+        
 //        if let dto = request.dto,
 //           let dtoEncoded = try? encoder.encode(dto) {
 //            urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
 //            urlRequest.httpBody = dtoEncoded
 //        }
         
-        urlRequest.setValue(NetworkConstants.acceptValue, forHTTPHeaderField: NetworkConstants.acceptKey)
-        urlRequest.setValue(NetworkConstants.tokenValue, forHTTPHeaderField: NetworkConstants.tokenKey)
-        urlRequest.setValue(NetworkConstants.contentTypeValue, forHTTPHeaderField: NetworkConstants.contentTypeKey)
-        
-        if let dto = request.dto,
-           let dtoEncoded = try? encoder.encode(dto) {
-            urlRequest.httpBody = dtoEncoded
+        if let dto = request.dto {
+            do {
+                let dtoEncoded = try encoder.encode(dto)
+                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                urlRequest.httpBody = dtoEncoded
+            } catch {
+                assertionFailure("Failed to encode DTO")
+                return nil
+            }
+        } else if let httpBody = request.httpBody {
+            urlRequest.setValue(NetworkConstants.acceptValue, forHTTPHeaderField: NetworkConstants.acceptKey)
+            urlRequest.setValue(NetworkConstants.contentTypeValue, forHTTPHeaderField: NetworkConstants.contentTypeKey)
+            urlRequest.httpBody = httpBody.data(using: .utf8)
         }
-
+        
+        urlRequest.setValue(NetworkConstants.tokenValue, forHTTPHeaderField: NetworkConstants.tokenKey)
+        
         return urlRequest
     }
-
+    
     private func parse<T: Decodable>(data: Data, type _: T.Type, onResponse: @escaping (Result<T, Error>) -> Void) {
         do {
             let response = try decoder.decode(T.self, from: data)
