@@ -36,7 +36,6 @@ final class ProfileViewModel {
             switch result {
             case .success(let profile):
                 self?.userProfile = profile
-                print("Profile loaded successfully: \(profile)")
             case .failure(let error):
                 print("Failed to load profile: \(error)")
             }

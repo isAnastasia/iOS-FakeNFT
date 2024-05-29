@@ -128,7 +128,6 @@ extension FavouriteNFTViewController: UICollectionViewDelegateFlowLayout {
         let totalSpacing: CGFloat = 16 * 2 + 7
         let availableWidth = collectionView.frame.width - totalSpacing
         let cellWidth = availableWidth / 2
-        print("collectionView.frame.width: \(collectionView.frame.width), cellWidth: \(cellWidth)")
         return CGSize(width: cellWidth, height: 80)
     }
     

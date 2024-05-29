@@ -82,28 +82,18 @@ final class ProfileEditorViewController: UIViewController {
     
     // MARK: - Event Handler (Actions)
     @objc private func closeButtonTapped() {
-        print("Name before update: \(nameTF.text ?? "")")
-        print("Description before update: \(descriptionTV.text ?? "")")
-        print("Website before update: \(websiteTF.text ?? "")")
-        
         viewModel?.updateUserName(nameTF.text ?? "")
         viewModel?.updateUserDescription(descriptionTV.text)
         viewModel?.updateUserWebsite(websiteTF.text ?? "")
         
-        if let updatedProfile = viewModel?.userProfile {
-            print("Updated profile before saving: \(updatedProfile)")
-        }
-        
         viewModel?.saveProfileData { [weak self] result in
             switch result {
             case .success(let updatedProfile):
-                print("Профиль успешно сохранен: \(updatedProfile)")
                 self?.onProfileUpdated?(updatedProfile)
                 DispatchQueue.main.async {
                     self?.dismiss(animated: true, completion: nil)
                 }
             case .failure(let error):
-                print("Ошибка при сохранении профиля: \(error)")
                 DispatchQueue.main.async {
                     self?.dismiss(animated: true, completion: nil)
                 }

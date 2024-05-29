@@ -66,7 +66,6 @@ final class ProfileViewController: UIViewController {
     
     private func updateUI() {
         guard let profile = viewModel?.userProfile else { return }
-        print("Updating UI with profile: \(profile)")
         userNameLabel.text = profile.name
         userDescriptionLabel.text = profile.description
         userWebsiteLabel.text = profile.website
@@ -102,7 +101,6 @@ final class ProfileViewController: UIViewController {
         let profileEditorVC = ProfileEditorViewController()
         profileEditorVC.viewModel = ProfileEditorViewModel(profile: profile)
         profileEditorVC.onProfileUpdated = { [weak self] updatedProfile in
-            print("Updated profile received in ProfileViewController: \(updatedProfile)")
             self?.viewModel?.userProfile = updatedProfile
             self?.viewModel?.onProfileDataUpdated?()
         }
