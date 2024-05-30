@@ -12,6 +12,22 @@ final class CatalogCollectionsViewModel {
     var errorBinding: (() -> ())?
     var showLoadingHandler: (() -> ())?
     var hideLoadingHandler: (() -> ())?
+    
+    var selectedSorting: SortingTypes {
+        get {
+            if let value = userDefaults.string(forKey: "sorting") {
+                guard let sorting = SortingTypes(rawValue: value) else {
+                    return SortingTypes.Default
+                }
+                return sorting
+            } else {
+                return SortingTypes.Default
+            }
+        }
+        set {
+            userDefaults.set(newValue.rawValue, forKey: "sorting")
+        }
+    }
 
     private(set) var collections: [CatalogSingleCollectionViewModel] = []{
         didSet {
@@ -20,6 +36,7 @@ final class CatalogCollectionsViewModel {
     }
     
     private let provider: CatalogCollectionsProvider
+    private let userDefaults = UserDefaults.standard
     
     convenience init() {
         let provider = CatalogCollectionsProvider(networkClient: DefaultNetworkClient())
@@ -28,33 +45,18 @@ final class CatalogCollectionsViewModel {
     
     init(provider: CatalogCollectionsProvider) {
         self.provider = provider
-        //self.fetchCollections()
     }
     
-    func filterCollectionsByName() {
-        if !collections.isEmpty {
-            var filteredCollections = collections
-            filteredCollections.sort {
-                $0.name < $1.name
-            }
-            collections = filteredCollections
-        }
-    }
-    
-    func filterCollectionsByCount() {
-        if !collections.isEmpty {
-            var filteredCollections = collections
-            filteredCollections.sort {
-                $0.nftCount > $1.nftCount
-            }
-            collections = filteredCollections
-        }
+    func sortingChanged(newSorting: SortingTypes) {
+        selectedSorting = newSorting
+        collections = sortCollections(collectionsToSort: collections)
     }
     
     func fetchCollections() {
         var convertedCollections: [CatalogSingleCollectionViewModel] = []
         showLoadingHandler?()
         provider.getCollections { [weak self] result in
+            guard let self = self else {return}
             switch result {
             case .success(let nftCollectionsResult):
                 nftCollectionsResult.forEach { collection in
@@ -63,16 +65,31 @@ final class CatalogCollectionsViewModel {
                         cover: collection.cover,
                         nftCount: collection.nfts.count))
                 }
-                self?.collections = convertedCollections
-                self?.hideLoadingHandler?()
+                self.collections = self.sortCollections(collectionsToSort: convertedCollections)
+                self.hideLoadingHandler?()
             case .failure(let error):
-                guard let self = self else {
-                    return
-                }
                 self.hideLoadingHandler?()
                 self.errorBinding?()
                 print(error)
             }
+        }
+    }
+    
+    private func sortCollections(collectionsToSort: [CatalogSingleCollectionViewModel]) -> [CatalogSingleCollectionViewModel] {
+        var sortedCollections: [CatalogSingleCollectionViewModel] = collectionsToSort
+        switch selectedSorting {
+        case .ByName:
+            sortedCollections.sort {
+                $0.name < $1.name
+            }
+            return sortedCollections
+        case .ByNftCount:
+            sortedCollections.sort {
+                $0.nftCount > $1.nftCount
+            }
+            return sortedCollections
+        case .Default:
+            return sortedCollections
         }
     }
 }

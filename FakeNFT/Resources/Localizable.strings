@@ -9,9 +9,9 @@
 "Error.repeat" = "Повторить";
 "Error.title" = "Ошибка";
 
-"Filter" = "Сортировка";
-"Filter.byName" = "По названию";
-"Filter.byCount" = "По количеству NFT";
+"Sorting" = "Сортировка";
+"Sorting.byName" = "По названию";
+"Sorting.byCount" = "По количеству NFT";
 
 "Close" = "Закрыть";
 "Ok" = "Ок";

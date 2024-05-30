@@ -38,26 +38,26 @@ final class CatalogViewController: UIViewController, UITableViewDataSource, UITa
     }
     //MARK: - Actions
     @objc
-    func filterCollections() {
+    func sortCollectionsButtonTapped() {
         let alert = UIAlertController(
-            title: NSLocalizedString("Filter", comment: ""),
+            title: NSLocalizedString("Sorting", comment: ""),
             message: nil,
             preferredStyle: .actionSheet)
         
-        let filterByNameAction = UIAlertAction(
-            title: NSLocalizedString("Filter.byName", comment: ""),
+        let sortByNameAction = UIAlertAction(
+            title: NSLocalizedString("Sorting.byName", comment: ""),
             style: .default) { [weak self] _ in
                 guard let self = self else {return}
-                self.collectionsViewModel.filterCollectionsByName()
+                self.collectionsViewModel.sortingChanged(newSorting: SortingTypes.ByName)
         }
-        alert.addAction(filterByNameAction)
-        let filterByCountAction = UIAlertAction(
-            title: NSLocalizedString("Filter.byCount", comment: ""),
+        alert.addAction(sortByNameAction)
+        let sortByCountAction = UIAlertAction(
+            title: NSLocalizedString("Sorting.byCount", comment: ""),
             style: .default) { [weak self] _ in
                 guard let self = self else {return}
-                self.collectionsViewModel.filterCollectionsByCount()
+                self.collectionsViewModel.sortingChanged(newSorting: SortingTypes.ByNftCount)
         }
-        alert.addAction(filterByCountAction)
+        alert.addAction(sortByCountAction)
         alert.addAction(UIAlertAction(
             title: NSLocalizedString("Close", comment: ""),
             style: .cancel))
@@ -108,7 +108,7 @@ final class CatalogViewController: UIViewController, UITableViewDataSource, UITa
     
     private func setUpNavigationTabBar() {
         navigationBar = navigationController?.navigationBar
-        let addButton = UIBarButtonItem(image: UIImage(named: "sort.png") ?? UIImage(systemName: "text.justifyleft"), style: .plain, target: self, action: #selector(filterCollections))
+        let addButton = UIBarButtonItem(image: UIImage(named: "sort.png") ?? UIImage(systemName: "text.justifyleft"), style: .plain, target: self, action: #selector(sortCollectionsButtonTapped))
         addButton.tintColor = .segmentActive
         navigationBar?.topItem?.rightBarButtonItem = addButton
     }
