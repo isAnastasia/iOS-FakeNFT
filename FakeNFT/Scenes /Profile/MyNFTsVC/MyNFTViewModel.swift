@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class MyNFTViewModel {
+final class MyNFTViewModel: MyNFTViewModelProtocol {
     
     // MARK: - Public Properties
     var nfts: [MyNFTModel] = [] {
@@ -30,7 +30,7 @@ final class MyNFTViewModel {
                 images: ["liloNFT"],
                 name: "Lilo",
                 rating: 2,
-                price: Double(String("1,78").replacingOccurrences(of: ",", with: ".")) ?? 0,
+                price: 1.98,
                 id: "1",
                 description: "от John Doe"
             ),
@@ -38,7 +38,7 @@ final class MyNFTViewModel {
                 images: ["springNFT"],
                 name: "Spring",
                 rating: 3,
-                price: Double(String("1,78").replacingOccurrences(of: ",", with: ".")) ?? 0,
+                price: 1.58,
                 id: "2",
                 description: "от John Doe"
             ),
@@ -46,7 +46,7 @@ final class MyNFTViewModel {
                 images: ["aprilNFT"],
                 name: "April",
                 rating: 4,
-                price: Double(String("1,78").replacingOccurrences(of: ",", with: ".")) ?? 0,
+                price: 1.78,
                 id: "3",
                 description: "от John Doe"
             )
@@ -73,5 +73,20 @@ final class MyNFTViewModel {
     
     func sortByName() {
         nfts.sort { $0.name < $1.name }
+    }
+    
+    // MARK: - Sorting Actions
+    func getSortActions() -> [SortAction] {
+        return [
+            SortAction(title: "По цене") { [weak self] in
+                self?.sortByPrice()
+            },
+            SortAction(title: "По рейтингу") { [weak self] in
+                self?.sortByRating()
+            },
+            SortAction(title: "По названию") { [weak self] in
+                self?.sortByName()
+            }
+        ]
     }
 }

@@ -74,11 +74,10 @@ final class ProfileViewController: UIViewController {
         tableView.reloadData()
     }
     
-    
     private func setupTableView() {
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: "ProfileCell")
         tableView.rowHeight = 54
         tableView.isScrollEnabled = false
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -98,9 +97,9 @@ final class ProfileViewController: UIViewController {
     // MARK: - Event Handler (Actions)
     @objc private func editButtonTapped() {
         guard let profile = viewModel?.userProfile else { return }
-        let profileEditorVC = ProfileEditorViewController()
-        profileEditorVC.viewModel = ProfileEditorViewModel(profile: profile)
-        profileEditorVC.onProfileUpdated = { [weak self] updatedProfile in
+        let profileEditorViewModel = ProfileEditorViewModel(profile: profile)
+        let profileEditorVC = ProfileEditorViewController(viewModel: profileEditorViewModel)
+        profileEditorViewModel.onProfileUpdated = { [weak self] updatedProfile in
             self?.viewModel?.userProfile = updatedProfile
             self?.viewModel?.onProfileDataUpdated?()
         }
@@ -114,24 +113,24 @@ extension ProfileViewController {
         [userPhotoAndNameStackView, userInfoStackView, tableView].forEach {
             view.addSubview($0)
         }
-
+        
         [userPhotoImage, userNameLabel].forEach {
             userPhotoAndNameStackView.addArrangedSubview($0)
         }
-
+        
         [userDescriptionLabel, userWebsiteLabel].forEach {
             userInfoStackView.addArrangedSubview($0)
         }
-
+        
         NSLayoutConstraint.activate([
             userPhotoAndNameStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             userPhotoAndNameStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             userPhotoAndNameStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-
+            
             userInfoStackView.topAnchor.constraint(equalTo: userPhotoAndNameStackView.bottomAnchor, constant: 20),
             userInfoStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             userInfoStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-
+            
             tableView.topAnchor.constraint(equalTo: userInfoStackView.bottomAnchor, constant: 40),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -145,31 +144,26 @@ extension ProfileViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 3
     }
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        var label: UILabel
-
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "ProfileCell", for: indexPath) as? ProfileTableViewCell else {
+            return UITableViewCell()
+        }
+        
+        var text = ""
         switch indexPath.row {
         case 0:
-            label = myNftLabel
+            text = myNftLabel.text ?? ""
         case 1:
-            label = favoriteNftLabel
+            text = favoriteNftLabel.text ?? ""
         case 2:
-            label = aboutDeveloperLabel
+            text = aboutDeveloperLabel.text ?? ""
         default:
-            label = UILabel()
+            break
         }
-
+        
+        cell.configure(with: text)
         cell.accessoryView = customAccessoryView()
-        cell.contentView.addSubview(label)
-
-        NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 16),
-            label.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -16),
-            label.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor)
-        ])
-
         return cell
     }
 }
@@ -180,13 +174,18 @@ extension ProfileViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         switch indexPath.row {
         case 0:
-            let myNFTVC = MyNFTViewController()
+            let myNFTViewModel = MyNFTViewModel()
+            let myNFTVC = MyNFTViewController(viewModel: myNFTViewModel)
+            hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(myNFTVC, animated: true)
         case 1:
-            let favouriteNFTVC = FavouriteNFTViewController()
+            let favouriteNFTViewModel = FavouriteNFTViewModel()
+            let favouriteNFTVC = FavouriteNFTViewController(viewModel: favouriteNFTViewModel)
+            hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(favouriteNFTVC, animated: true)
         case 2:
             let aboutDeveloperVC = AboutDeveloperViewController()
+            hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(aboutDeveloperVC, animated: true)
         default:
             break

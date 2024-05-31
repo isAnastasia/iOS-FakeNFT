@@ -10,7 +10,7 @@ import UIKit
 final class FavouriteNFTViewController: UIViewController {
 
     // MARK: - Properties
-    private var viewModel: FavouriteNFTViewModel!
+    private var viewModel: FavouriteNFTViewModelProtocol
     private let stubLabel = Labels(style: .bold17LabelStyle, text: "У Вас ещё нет избранных NFT")
 
     private lazy var collectionView: UICollectionView = {
@@ -26,15 +26,24 @@ final class FavouriteNFTViewController: UIViewController {
         return collectionView
     }()
 
+    // MARK: - Initializers
+    init(viewModel: FavouriteNFTViewModelProtocol) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+        bindViewModel()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel = FavouriteNFTViewModel()
         view.backgroundColor = .systemBackground
         setupNavigationBar()
         setupCollectionView()
         setupStubLabel()
-        bindViewModel()
         viewModel.loadMockData()
     }
 
@@ -57,6 +66,10 @@ final class FavouriteNFTViewController: UIViewController {
         )
 
         navigationItem.leftBarButtonItem = backBarButtonItem
+        
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.isTranslucent = true
 
         navigationController?.navigationBar.tintColor = .blackDay
     }

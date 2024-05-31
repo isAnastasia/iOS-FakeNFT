@@ -10,19 +10,28 @@ import UIKit
 final class MyNFTViewController: UIViewController {
     
     // MARK: - Properties
-    private var viewModel: MyNFTViewModel!
+    private var viewModel: MyNFTViewModelProtocol
     private let tableView = UITableView()
     private let stubLabel = Labels(style: .bold17LabelStyle, text: "У Вас ещё нет NFT")
+    
+    // MARK: - Initializers
+    init(viewModel: MyNFTViewModelProtocol) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+        bindViewModel()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel = MyNFTViewModel()
         view.backgroundColor = .systemBackground
         setupNavigationBar()
         setupTableView()
         setupStubLabel()
-        bindViewModel()
         viewModel.loadMockData()
     }
     
@@ -46,7 +55,7 @@ final class MyNFTViewController: UIViewController {
         
         let sortButtonImage = UIImage(named: "sortButton")?.withRenderingMode(.alwaysOriginal)
         let sortBarButtonItem = UIBarButtonItem(
-            image: sortButtonImage, 
+            image: sortButtonImage,
             style: .plain,
             target: self,
             action: #selector(sortButtonTapped)
@@ -54,6 +63,10 @@ final class MyNFTViewController: UIViewController {
         
         navigationItem.leftBarButtonItem = backBarButtonItem
         navigationItem.rightBarButtonItem = sortBarButtonItem
+        
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.isTranslucent = true
         
         navigationController?.navigationBar.tintColor = .blackDay
     }
@@ -100,18 +113,7 @@ final class MyNFTViewController: UIViewController {
     }
     
     @objc private func sortButtonTapped() {
-        let actions = [
-            SortAction(title: "По цене") { [weak self] in
-                self?.viewModel.sortByPrice()
-            },
-            SortAction(title: "По рейтингу") { [weak self] in
-                self?.viewModel.sortByRating()
-            },
-            SortAction(title: "По названию") { [weak self] in
-                self?.viewModel.sortByName()
-            }
-        ]
-        
+        let actions = viewModel.getSortActions()
         let sortAlert = MyNFTSortAlert().showSortingAlert(actions: actions)
         present(sortAlert, animated: true, completion: nil)
     }

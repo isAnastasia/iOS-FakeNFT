@@ -18,9 +18,11 @@ final class ProfileViewModel {
     
     var onProfileDataUpdated: (() -> Void)?
     var onLoadingStatusChanged: ((Bool) -> Void)?
+    private let profileNetworkService: ProfileNetworkService
     
     // MARK: - Initializers
-    init() {
+    init(profileNetworkService: ProfileNetworkService = ProfileNetworkService()) {
+        self.profileNetworkService = profileNetworkService
         loadData()
     }
     
@@ -28,10 +30,7 @@ final class ProfileViewModel {
     func loadData() {
         onLoadingStatusChanged?(true)
         
-        let networkClient = DefaultNetworkClient()
-        let request = ProfileRequest()
-        
-        networkClient.send(request: request, type: UserProfileModel.self) { [weak self] result in
+        profileNetworkService.fetchProfile { [weak self] result in
             self?.onLoadingStatusChanged?(false)
             switch result {
             case .success(let profile):
@@ -56,8 +55,6 @@ final class ProfileViewModel {
     
     func saveProfileData(completion: @escaping (Result<UserProfileModel, Error>) -> Void) {
         guard let profile = userProfile else { return }
-
-        let networkClient = DefaultNetworkClient()
         
         var encodedLikes = profile.likes.map { String($0) }.joined(separator: ",")
         if encodedLikes.isEmpty {
@@ -66,9 +63,7 @@ final class ProfileViewModel {
         
         let profileData = "name=\(profile.name)&description=\(profile.description)&website=\(profile.website)&avatar=\(profile.avatar)&likes=\(encodedLikes)"
         
-        let request = UpdateProfileRequest.init(profileData)
-
-        networkClient.send(request: request, type: UserProfileModel.self) { result in
+        profileNetworkService.updateProfile(profileData: profileData) { result in
             switch result {
             case .success(let updatedProfile):
                 self.userProfile = updatedProfile

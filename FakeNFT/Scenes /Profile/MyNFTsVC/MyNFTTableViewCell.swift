@@ -18,16 +18,16 @@ final class MyNFTTableViewCell: UITableViewCell {
     // MARK: - Private Properties
     private let cellHeight: CGFloat = 140
     
-    private var myNFTNameLabel = Labels(style: .bold17LabelStyle)
+    private let myNFTNameLabel = Labels(style: .bold17LabelStyle)
     private let myNFTAuthorLabel = Labels(style: .myNFTAuthorLabelStyle)
     
     private let myNFTPriceLabel = Labels(style: .myNFTPriceLabelStyle)
-    private var myNFTValuePriceLabel = Labels(style: .bold17LabelStyle)
+    private let myNFTValuePriceLabel = Labels(style: .bold17LabelStyle)
     
-    private var myNFTImage = ImageViews(style: .myNFTStyle)
-    private var myNFTLikeButton = Buttons(style: .smallLikeButtonStyle)
+    private let myNFTImage = ImageViews(style: .myNFTStyle)
+    private let myNFTLikeButton = Buttons(style: .smallLikeButtonStyle)
     
-    private var myNFTRatingImage = MyNFTRating()
+    private let myNFTRatingImage = MyNFTRating()
     
     private let myNFTDescriptionStackView = StackViews(style: .myNFTDescriptionStyle)
     private let myNFTPriceStackView = StackViews(style: .myNFTPriceStyle)
@@ -47,7 +47,7 @@ final class MyNFTTableViewCell: UITableViewCell {
     func configure(with myNFT: MyNFTModel) {
         loadNFTImage(from: myNFT.images.first)
         myNFTNameLabel.text = myNFT.name
-        myNFTValuePriceLabel.text = formattedPrice(from: myNFT.price)
+        myNFTValuePriceLabel.text = myNFT.formattedPrice()
         myNFTRatingImage.setupRating(rating: myNFT.rating)
     }
     

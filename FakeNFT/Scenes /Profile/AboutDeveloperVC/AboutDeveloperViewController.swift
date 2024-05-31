@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AboutDeveloperViewController: UIViewController {
+final class AboutDeveloperViewController: UIViewController {
     
     // MARK: - Private Properties
     private let aboutDeveloperImageView = ImageViews(style: .aboutDeveloperStyle)
@@ -33,10 +33,15 @@ class AboutDeveloperViewController: UIViewController {
         )
         
         navigationItem.leftBarButtonItem = backBarButtonItem
-        navigationController?.navigationBar.barTintColor = .white
-        navigationController?.navigationBar.isTranslucent = false
         
-        navigationController?.navigationBar.tintColor = .blackDay
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.isTranslucent = true
+        
+        navigationController?.navigationBar.tintColor = .whiteDay
+        
+        let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        navigationController?.navigationBar.titleTextAttributes = textAttributes
     }
     
     // MARK: - Event Handler (Actions)

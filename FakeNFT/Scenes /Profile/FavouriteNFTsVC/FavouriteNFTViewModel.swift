@@ -7,9 +7,7 @@
 
 import UIKit
 
-class FavouriteNFTViewModel {
-    
-    // MARK: - Public Properties
+class FavouriteNFTViewModel: FavouriteNFTViewModelProtocol {
     var nfts: [MyNFTModel] = [] {
         didSet {
             onNFTsUpdated?()
@@ -18,12 +16,10 @@ class FavouriteNFTViewModel {
     
     var onNFTsUpdated: (() -> Void)?
     
-    // MARK: - Initializers
     init() {
         loadMockData()
     }
     
-    // MARK: - Public Methods
     func loadMockData() {
         nfts = [
             MyNFTModel(

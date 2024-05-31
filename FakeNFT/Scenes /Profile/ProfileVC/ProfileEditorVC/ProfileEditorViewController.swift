@@ -9,11 +9,9 @@ import UIKit
 
 final class ProfileEditorViewController: UIViewController {
     
-    // MARK: - Public Properties
-    var viewModel: ProfileEditorViewModel?
-    var onProfileUpdated: ((UserProfileModel) -> Void)?
-    
     // MARK: - Private Properties
+    private let viewModel: ProfileEditorViewModelProtocol
+    
     private lazy var nameTF = TextFields(
         style: .defaultTFStyle,
         target: self,
@@ -33,6 +31,15 @@ final class ProfileEditorViewController: UIViewController {
         return textView
     }()
     
+    private lazy var tapGesture: UITapGestureRecognizer = {
+        let tapGesture = UITapGestureRecognizer(
+            target: self,
+            action: #selector(dismissKeyboard)
+        )
+        tapGesture.cancelsTouchesInView = false
+        return tapGesture
+    }()
+    
     private let closeButton = Buttons(style: .closeButtonStyle)
     
     private let userPhotoImage = ImageViews(style: .userPhotoStyle)
@@ -47,6 +54,16 @@ final class ProfileEditorViewController: UIViewController {
     private let descriptionStackView = StackViews(style: .vertical8Style)
     private let websiteeStackView = StackViews(style: .vertical8Style)
     
+    // MARK: - Initializers
+    init(viewModel: ProfileEditorViewModelProtocol) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,6 +71,7 @@ final class ProfileEditorViewController: UIViewController {
         setupViewsAndConstraints()
         setupCloseButtonAction()
         setupInitialValues()
+        setupKeyboardObservers()
     }
     
     // MARK: - Private Methods
@@ -74,22 +92,57 @@ final class ProfileEditorViewController: UIViewController {
     }
     
     private func setupInitialValues() {
-        guard let profile = viewModel?.userProfile else { return }
+        let profile = viewModel.userProfile
         nameTF.text = profile.name
         descriptionTV.text = profile.description
         websiteTF.text = profile.website
     }
     
+    private func setupKeyboardObservers() {
+        NotificationCenter.default.addObserver(
+            forName: UIResponder.keyboardWillShowNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            self?.keyboardWillShow(notification: notification)
+        }
+        
+        NotificationCenter.default.addObserver(
+            forName: UIResponder.keyboardWillHideNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            self?.keyboardWillHide(notification: notification)
+        }
+    }
+    
+    private func keyboardWillShow(notification: Notification) {
+        if websiteTF.isFirstResponder,
+           let keyboardFrame = notification.userInfo?[
+            UIResponder.keyboardFrameEndUserInfoKey
+           ] as? CGRect {
+            let keyboardHeight = keyboardFrame.height
+            let bottomInset = keyboardHeight - view.safeAreaInsets.bottom
+            view.frame.origin.y = -bottomInset
+        }
+    }
+
+    private func keyboardWillHide(notification: Notification) {
+        if websiteTF.isFirstResponder {
+            view.frame.origin.y = 0
+        }
+    }
+    
     // MARK: - Event Handler (Actions)
     @objc private func closeButtonTapped() {
-        viewModel?.updateUserName(nameTF.text ?? "")
-        viewModel?.updateUserDescription(descriptionTV.text)
-        viewModel?.updateUserWebsite(websiteTF.text ?? "")
+        viewModel.updateUserName(nameTF.text ?? "")
+        viewModel.updateUserDescription(descriptionTV.text)
+        viewModel.updateUserWebsite(websiteTF.text ?? "")
         
-        viewModel?.saveProfileData { [weak self] result in
+        viewModel.saveProfileData { [weak self] result in
             switch result {
             case .success(let updatedProfile):
-                self?.onProfileUpdated?(updatedProfile)
+                self?.viewModel.onProfileUpdated?(updatedProfile)
                 DispatchQueue.main.async {
                     self?.dismiss(animated: true, completion: nil)
                 }
@@ -105,21 +158,27 @@ final class ProfileEditorViewController: UIViewController {
     }
     
     @objc private func nameTFDidChange(_ textField: UITextField) {
-        viewModel?.updateUserName(textField.text ?? "")
+        viewModel.updateUserName(textField.text ?? "")
     }
     
     @objc private func websiteTFDidChange(_ textField: UITextField) {
-        viewModel?.updateUserWebsite(textField.text ?? "")
+        viewModel.updateUserWebsite(textField.text ?? "")
     }
     
     @objc private func descriptionTVDidChange(_ textView: UITextView) {
-        viewModel?.updateUserDescription(textView.text)
+        viewModel.updateUserDescription(textView.text)
+    }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
     }
 }
 
 // MARK: - Layout
 extension ProfileEditorViewController {
     private func setupViewsAndConstraints() {
+        view.addGestureRecognizer(tapGesture)
+        
         [closeButton, userPhotoImage, userPhotoBackgroundImage, userPhotoEditorButton, nameStackView, descriptionStackView, websiteeStackView].forEach {
             view.addSubview($0)
         }

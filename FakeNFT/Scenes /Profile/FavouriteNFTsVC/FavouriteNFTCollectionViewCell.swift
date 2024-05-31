@@ -13,11 +13,11 @@ final class FavouriteNFTCollectionViewCell: UICollectionViewCell, ReuseIdentifyi
     static let reuseIdentifier = "FavouriteNFTCollectionViewCell"
     
     // MARK: - Private Properties
-    private var nftImage = ImageViews(style: .myNFTStyle2)
-    private var nftNameLabel = Labels(style: .bold17LabelStyle)
-    private var nftValuePriceLabel = Labels(style: .regular15LabelStyle)
-    private var nftRatingImage = MyNFTRating()
-    private var nftLikeButton = Buttons(style: .largeLikeButtonStyle)
+    private let nftImage = ImageViews(style: .myNFTStyle2)
+    private let nftNameLabel = Labels(style: .bold17LabelStyle)
+    private let nftValuePriceLabel = Labels(style: .regular15LabelStyle)
+    private let nftRatingImage = MyNFTRating()
+    private let nftLikeButton = Buttons(style: .largeLikeButtonStyle)
     
     private let descriptionStackView = StackViews(style: .vertical4Style2)
     private let mainStackView = StackViews(style: .vertical8Style2)
@@ -37,12 +37,8 @@ final class FavouriteNFTCollectionViewCell: UICollectionViewCell, ReuseIdentifyi
     func configure(with nft: MyNFTModel) {
         nftImage.image = UIImage(named: nft.images.first ?? "")
         nftNameLabel.text = nft.name
-        nftValuePriceLabel.text = formattedPrice(from: nft.price)
+        nftValuePriceLabel.text = nft.formattedPrice()
         nftRatingImage.setupRating(rating: nft.rating)
-    }
-    
-    private func formattedPrice(from price: Double) -> String {
-        return String(format: "%.2f ETH", price).replacingOccurrences(of: ".", with: ",")
     }
 }
 
