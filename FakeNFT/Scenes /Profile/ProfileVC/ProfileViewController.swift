@@ -42,7 +42,7 @@ final class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        viewModel = ProfileViewModel()
+        viewModel = ProfileViewModel(profileNetworkService: ProfileNetworkService())
         setupViewsAndConstraints()
         setupTableView()
         setupBindings()

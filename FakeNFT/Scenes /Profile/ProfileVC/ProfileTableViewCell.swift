@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ProfileTableViewCell: UITableViewCell {
+final class ProfileTableViewCell: UITableViewCell {
     
     // MARK: - Private Properties
     private let label = Labels(style: .bold17LabelStyle)

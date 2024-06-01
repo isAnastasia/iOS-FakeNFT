@@ -20,4 +20,3 @@ struct MyNFTModel: Codable, Equatable {
         return String(format: "%.2f ETH", price).replacingOccurrences(of: ".", with: ",")
     }
 }
-

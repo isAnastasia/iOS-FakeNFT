@@ -7,7 +7,7 @@
 
 import Foundation
 
-class ProfileNetworkService {
+final class ProfileNetworkService: ProfileNetworkServiceProtocol {
     private let networkClient: NetworkClient
     
     init(networkClient: NetworkClient = DefaultNetworkClient()) {

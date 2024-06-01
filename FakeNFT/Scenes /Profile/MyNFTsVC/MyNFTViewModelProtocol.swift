@@ -21,4 +21,3 @@ protocol MyNFTViewModelProtocol {
     
     func getSortActions() -> [SortAction]
 }
-

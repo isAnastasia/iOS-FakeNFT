@@ -7,7 +7,7 @@
 
 import UIKit
 
-class FavouriteNFTViewModel: FavouriteNFTViewModelProtocol {
+final class FavouriteNFTViewModel: FavouriteNFTViewModelProtocol {
     var nfts: [MyNFTModel] = [] {
         didSet {
             onNFTsUpdated?()

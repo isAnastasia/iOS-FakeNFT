@@ -18,12 +18,11 @@ final class ProfileViewModel {
     
     var onProfileDataUpdated: (() -> Void)?
     var onLoadingStatusChanged: ((Bool) -> Void)?
-    private let profileNetworkService: ProfileNetworkService
+    private let profileNetworkService: ProfileNetworkServiceProtocol
     
     // MARK: - Initializers
-    init(profileNetworkService: ProfileNetworkService = ProfileNetworkService()) {
+    init(profileNetworkService: ProfileNetworkServiceProtocol) {
         self.profileNetworkService = profileNetworkService
-        loadData()
     }
     
     // MARK: - Public Methods
@@ -74,7 +73,7 @@ final class ProfileViewModel {
         }
     }
     
-    // MARK: - Private Properties
+    // MARK: - Private Methods
     private func updateProfileData() {
         onProfileDataUpdated?()
     }
