@@ -65,3 +65,36 @@ extension UIColor {
         : .yaBlackLight
     }
 }
+
+extension UIColor {
+    convenience init(hex: UInt32, alpha: CGFloat = 1.0) {
+        let red = CGFloat((hex & 0xFF0000) >> 16) / 255.0
+        let green = CGFloat((hex & 0x00FF00) >> 8) / 255.0
+        let blue = CGFloat(hex & 0x0000FF) / 255.0
+        self.init(red: red, green: green, blue: blue, alpha: alpha)
+    }
+    
+    // MARK: - Day Mode Colors
+    static let blackDay = UIColor(hex: 0x1A1B22)
+    static let whiteDay = UIColor(hex: 0xFFFFFF)
+    static let lightGrayDay = UIColor(hex: 0xF7F7F8)
+    
+    // MARK: - Night Mode Colors
+    static let whiteNight = UIColor(hex: 0x1A1B22)
+    static let blackNight = UIColor(hex: 0xFFFFFF)
+    static let lightGrayNight = UIColor(hex: 0x2C2C2E)
+    
+    // MARK: - Universal Colors
+    static let greyUniversal = UIColor(hex: 0x625C5C)
+    static let redUniversal = UIColor(hex: 0xF56B6C)
+    static let backgroundUniversal = UIColor(hex: 0x1A1B2280, alpha: 0.5)
+    static let greenUniversal = UIColor(hex: 0x1C9F00)
+    static let blueUniversal = UIColor(hex: 0x0A84FF)
+    static let blackUniversal = UIColor(hex: 0x1A1B22)
+    static let whiteUniversal = UIColor(hex: 0xFFFFFF)
+    static let yellowUniversal = UIColor(hex: 0xFEEF0D)
+    
+    // MARK: - Additional Colors
+    static let closeButtonColor = UIColor(hex: 0x8E8E93)
+    static let userPhotoEditorBackgroundColor = UIColor(hex: 0x1A1B22, alpha: 0.6)
+}
