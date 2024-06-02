@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class FavouriteNFTCollectionViewCell: UICollectionViewCell, ReuseIdentifying {
     
@@ -32,13 +33,19 @@ final class FavouriteNFTCollectionViewCell: UICollectionViewCell, ReuseIdentifyi
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     // MARK: - Public Methods
-    func configure(with nft: MyNFTModel1) {
-        nftImage.image = UIImage(named: nft.images.first ?? "")
+    func configure(with nft: MyNFTModel) {
+        loadNFTImage(from: nft.images.first)
         nftNameLabel.text = nft.name
         nftValuePriceLabel.text = nft.formattedPrice()
         nftRatingImage.setupRating(rating: nft.rating)
+    }
+    
+    // MARK: - Private Methods
+    private func loadNFTImage(from imageName: String?) {
+        guard let imageName = imageName, let imageUrl = URL(string: imageName) else { return }
+        nftImage.kf.setImage(with: imageUrl)
     }
 }
 

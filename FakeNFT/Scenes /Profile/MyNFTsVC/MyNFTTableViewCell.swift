@@ -56,11 +56,6 @@ final class MyNFTTableViewCell: UITableViewCell {
         guard let imageName = imageName, let imageUrl = URL(string: imageName) else { return }
         myNFTImage.kf.setImage(with: imageUrl)
     }
-
-    
-    private func formattedPrice(from price: Double) -> String {
-        return String(format: "%.2f ETH", price).replacingOccurrences(of: ".", with: ",")
-    }
 }
 
 extension MyNFTTableViewCell {

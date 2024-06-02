@@ -73,6 +73,7 @@ final class MyNFTService: MyNFTServiceProtocol {
                     dispatchGroup.leave()
                 case .failure(let error):
                     completion(.failure(error))
+                    dispatchGroup.leave()
                 }
             }
         }

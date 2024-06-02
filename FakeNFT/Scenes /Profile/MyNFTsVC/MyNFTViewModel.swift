@@ -6,6 +6,8 @@
 //
 
 
+import UIKit
+
 final class MyNFTViewModel: MyNFTViewModelProtocol {
     
     // MARK: - Public Properties

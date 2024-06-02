@@ -5,13 +5,12 @@
 //  Created by Dmitry Dmitry on 31.5.2024.
 //
 
-import UIKit
-
 protocol FavouriteNFTViewModelProtocol {
-    var nfts: [MyNFTModel1] { get set }
+    var nfts: [MyNFTModel] { get set }
     var onNFTsUpdated: (() -> Void)? { get set }
+    var onLoadingStatusChanged: ((Bool) -> Void)? { get set }
     
-    func loadMockData()
-    func getNFT(at index: Int) -> MyNFTModel1?
+    func loadFavouriteNFTs()
+    func getNFT(at index: Int) -> MyNFTModel?
     func numberOfNFTs() -> Int
 }

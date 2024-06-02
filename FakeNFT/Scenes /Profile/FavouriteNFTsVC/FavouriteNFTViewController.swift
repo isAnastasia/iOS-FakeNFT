@@ -6,12 +6,12 @@
 //
 
 import UIKit
+import ProgressHUD
 
 final class FavouriteNFTViewController: UIViewController {
 
-    // MARK: - Properties
+    // MARK: - Private Properties
     private var viewModel: FavouriteNFTViewModelProtocol
-    private let stubLabel = Labels(style: .bold17LabelStyle, text: "У Вас ещё нет избранных NFT")
 
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(
@@ -19,18 +19,21 @@ final class FavouriteNFTViewController: UIViewController {
             collectionViewLayout: UICollectionViewFlowLayout()
         )
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.register(FavouriteNFTCollectionViewCell.self)
+        collectionView.register(FavouriteNFTCollectionViewCell.self, forCellWithReuseIdentifier: FavouriteNFTCollectionViewCell.reuseIdentifier)
         collectionView.backgroundColor = .white
         collectionView.dataSource = self
         collectionView.delegate = self
         return collectionView
     }()
+    
+    private let stubLabel = Labels(style: .bold17LabelStyle, text: "У Вас ещё нет избранных NFT")
 
     // MARK: - Initializers
-    init(viewModel: FavouriteNFTViewModelProtocol) {
+    init(viewModel: FavouriteNFTViewModelProtocol = FavouriteNFTViewModel()) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         bindViewModel()
+        self.hidesBottomBarWhenPushed = true
     }
 
     required init?(coder: NSCoder) {
@@ -44,13 +47,20 @@ final class FavouriteNFTViewController: UIViewController {
         setupNavigationBar()
         setupCollectionView()
         setupStubLabel()
-        viewModel.loadMockData()
     }
 
     // MARK: - Private Methods
     private func bindViewModel() {
         viewModel.onNFTsUpdated = { [weak self] in
             self?.updateView()
+        }
+        viewModel.onLoadingStatusChanged = { [weak self] isLoading in
+            if isLoading {
+                ProgressHUD.show()
+            } else {
+                ProgressHUD.dismiss()
+                self?.updateView()
+            }
         }
     }
 
@@ -66,19 +76,12 @@ final class FavouriteNFTViewController: UIViewController {
         )
 
         navigationItem.leftBarButtonItem = backBarButtonItem
-        
-        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        navigationController?.navigationBar.shadowImage = UIImage()
-        navigationController?.navigationBar.isTranslucent = true
-
         navigationController?.navigationBar.tintColor = .blackDay
     }
 
     private func setupCollectionView() {
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.backgroundColor = .clear
         view.addSubview(collectionView)
-        
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -86,11 +89,10 @@ final class FavouriteNFTViewController: UIViewController {
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-    
+
     private func setupStubLabel() {
-        stubLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(stubLabel)
-        
+        stubLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             stubLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             stubLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
@@ -116,17 +118,11 @@ final class FavouriteNFTViewController: UIViewController {
 
 // MARK: - UICollectionViewDataSource
 extension FavouriteNFTViewController: UICollectionViewDataSource {
-    func collectionView(
-        _ collectionView: UICollectionView,
-        numberOfItemsInSection section: Int
-    ) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return viewModel.numberOfNFTs()
     }
 
-    func collectionView(
-        _ collectionView: UICollectionView,
-        cellForItemAt indexPath: IndexPath
-    ) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: FavouriteNFTCollectionViewCell.reuseIdentifier,
             for: indexPath
@@ -142,7 +138,6 @@ extension FavouriteNFTViewController: UICollectionViewDataSource {
 
 // MARK: - UICollectionViewDelegateFlowLayout
 extension FavouriteNFTViewController: UICollectionViewDelegateFlowLayout {
-    
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
@@ -153,7 +148,7 @@ extension FavouriteNFTViewController: UICollectionViewDelegateFlowLayout {
         let cellWidth = availableWidth / 2
         return CGSize(width: cellWidth, height: 80)
     }
-    
+
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
@@ -161,7 +156,7 @@ extension FavouriteNFTViewController: UICollectionViewDelegateFlowLayout {
     ) -> CGFloat {
         return 7
     }
-    
+
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
@@ -169,7 +164,7 @@ extension FavouriteNFTViewController: UICollectionViewDelegateFlowLayout {
     ) -> CGFloat {
         return 20
     }
-    
+
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
@@ -178,4 +173,3 @@ extension FavouriteNFTViewController: UICollectionViewDelegateFlowLayout {
         return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     }
 }
-

@@ -20,6 +20,7 @@ final class MyNFTViewController: UIViewController {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         bindViewModel()
+        self.hidesBottomBarWhenPushed = true
     }
     
     required init?(coder: NSCoder) {
@@ -39,6 +40,7 @@ final class MyNFTViewController: UIViewController {
     // MARK: - Private Methods
     private func bindViewModel() {
         viewModel.onNFTsUpdated = { [weak self] in
+            print("NFTs updated in view model: \(self?.viewModel.nfts ?? [])")
             self?.updateView()
         }
         viewModel.onLoadingStatusChanged = { [weak self] isLoading in
@@ -129,7 +131,7 @@ final class MyNFTViewController: UIViewController {
     }
 }
 
-// MARK: - UITableViewDataSource
+ // MARK: - UITableViewDataSource
 extension MyNFTViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.numberOfNFTs()

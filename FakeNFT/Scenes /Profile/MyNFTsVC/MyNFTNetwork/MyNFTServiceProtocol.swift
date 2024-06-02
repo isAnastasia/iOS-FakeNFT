@@ -10,3 +10,4 @@ import Foundation
 protocol MyNFTServiceProtocol {
     func fetchNFTs(completion: @escaping (Result<[MyNFTModel], Error>) -> Void)
 }
+

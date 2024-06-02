@@ -7,64 +7,42 @@
 
 import UIKit
 
-struct MyNFTModel1: Codable, Equatable {
-//    let createdAt: String
-    let images: [String]
-    let name: String
-    let rating: Int
-    let price: Double
-    let id: String
-    let description: String
-
-    func formattedPrice() -> String {
-        return String(format: "%.2f ETH", price).replacingOccurrences(of: ".", with: ",")
-    }
-}
-
 final class FavouriteNFTViewModel: FavouriteNFTViewModelProtocol {
     
-    var nfts: [MyNFTModel1] = [] {
+    // MARK: - Public Properties
+    var nfts: [MyNFTModel] = [] {
         didSet {
             onNFTsUpdated?()
         }
     }
     
     var onNFTsUpdated: (() -> Void)?
+    var onLoadingStatusChanged: ((Bool) -> Void)?
     
-    init() {
-        loadMockData()
+    // MARK: - Private Properties
+    private let favouriteNFTService: FavouriteNFTServiceProtocol
+    
+    // MARK: - Initializers
+    init(favouriteNFTService: FavouriteNFTServiceProtocol = FavouriteNFTService()) {
+        self.favouriteNFTService = favouriteNFTService
+        loadFavouriteNFTs()
     }
     
-    func loadMockData() {
-        nfts = [
-            MyNFTModel1(
-                images: ["liloNFT"],
-                name: "Lilo",
-                rating: 2,
-                price: 1.78,
-                id: "1",
-                description: "от John Doe"
-            ),
-            MyNFTModel1(
-                images: ["springNFT"],
-                name: "Spring",
-                rating: 3,
-                price: 1.78,
-                id: "2",
-                description: "от John Doe"
-            ),
-            MyNFTModel1(
-                images: ["aprilNFT"],
-                name: "April",
-                rating: 4,
-                price: 1.78,
-                id: "3",
-                description: "от John Doe"
-            )
-        ]
+    // MARK: - Public Methods
+    func loadFavouriteNFTs() {
+        onLoadingStatusChanged?(true)
+        favouriteNFTService.fetchFavouriteNFTs { [weak self] result in
+            self?.onLoadingStatusChanged?(false)
+            switch result {
+            case .success(let nfts):
+                self?.nfts = nfts
+            case .failure(let error):
+                print("Failed to load favourite NFTs: \(error)")
+            }
+        }
     }
     
-    func getNFT(at index: Int) -> MyNFTModel1? {
+    func getNFT(at index: Int) -> MyNFTModel? {
         guard index >= 0 && index < nfts.count else { return nil }
         return nfts[index]
     }
