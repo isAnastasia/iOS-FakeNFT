@@ -11,10 +11,10 @@ import UIKit
 final class NftCollectionViewCell: UICollectionViewCell {
     static let identifier = "NftCollectionViewCell"
     
-    var nftModel: NFT? {
+    var nftModel: NftCellModel? {
         didSet {
             guard let model = nftModel else {return}
-            nftImageView.image = model.cover
+            nftImageView.image = UIImage(named: "nft1.png")
             nameLabel.text = model.name
             let str = String(model.price) + " ETH"
             priceLabel.text = str
@@ -196,5 +196,6 @@ final class NftCollectionViewCell: UICollectionViewCell {
             likeButton.setImage(UIImage(named: "dislike.png"), for: .normal)
         }
     }
+    
     
 }

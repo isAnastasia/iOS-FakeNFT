@@ -12,4 +12,6 @@ struct NftCollectionCover: Decodable {
     let nfts: [String]
     let name: String
     let cover: String
+    let author: String
+    let description: String
 }

@@ -10,10 +10,11 @@ import Foundation
 typealias Binding<T> = (T) -> Void
 
 final class CatalogSingleCollectionViewModel {
-    let name: String
-    let cover: String
-    let nftCount: Int
+//    let name: String
+//    let cover: String
+//    let nftCount: Int
     
+    let collection: NftCollection
     var titleBinding: Binding<String>? {
         didSet {
             titleBinding?(convertCollectionName())
@@ -21,18 +22,16 @@ final class CatalogSingleCollectionViewModel {
     }
     var coverBinding: Binding<String>? {
         didSet {
-            coverBinding?(cover)
+            coverBinding?(collection.cover)
         }
     }
     
-    init(title: String, cover: String, nftCount: Int) {
-        self.name = title
-        self.cover = cover
-        self.nftCount = nftCount
+    init(collection: NftCollection) {
+        self.collection = collection
     }
     
     private func convertCollectionName() -> String {
-        let result = name + " (" + String(nftCount) + ")"
+        let result = collection.title + " (" + String(collection.nfts.count) + ")"
         return result
     }
 }

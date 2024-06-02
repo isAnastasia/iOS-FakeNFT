@@ -8,33 +8,15 @@
 import Foundation
 import UIKit
 
-struct NFT {
-    let cover: UIImage
-    let name: String
-    let stars: Int
-    var isLiked: Bool
-    let price: Float
-    let isInCart: Bool
-    
-    init(cover: UIImage, name: String, stars: Int, isLiked: Bool, price: Float, isInCart: Bool) {
-        self.cover = cover
-        self.name = name
-        self.stars = stars
-        self.isLiked = isLiked
-        self.price = price
-        self.isInCart = isInCart
-    }
-}
-
 struct NftCollection {
     let id: String
     let title: String
-    let cover: UIImage
+    let cover: String
     let author: String
     let description: String
-    let nfts: [NFT]
+    let nfts: [String]
     
-    init(id: String, title: String, cover: UIImage, author: String, description: String, nfts: [NFT]) {
+    init(id: String, title: String, cover: String, author: String, description: String, nfts: [String]) {
         self.id = id
         self.title = title
         self.cover = cover
@@ -44,40 +26,9 @@ struct NftCollection {
     }
 }
 
-final class NftCollectionViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    
-    private let mockData: NftCollection = NftCollection(
-        id: "1234",
-        title: "Peach",
-        cover: UIImage(named: "blue.png")!,
-        author: "John Doe",
-        description: "Персиковый — как облака над закатным солнцем в океане. В этой коллекции совмещены трогательная нежность и живая игривость сказочных зефирных зверей.",
-        nfts: [
-            NFT(cover: UIImage(named: "nft1.png")!,
-                name: "Archie",
-                stars: 2,
-                isLiked: true,
-                price: 1,
-                isInCart: true),
-            NFT(cover: UIImage(named: "nft2.png")!,
-                name: "Ruby",
-                stars: 3,
-                isLiked: true,
-                price: 1,
-                isInCart: true),
-            NFT(cover: UIImage(named: "nft3.png")!,
-                name: "Nacho",
-                stars: 4,
-                isLiked: false,
-                price: 1,
-                isInCart: false),
-            NFT(cover: UIImage(named: "nft4.png")!,
-                name: "Biscuit",
-                stars: 5,
-                isLiked: false,
-                price: 1,
-                isInCart: false)
-        ])
+final class NftCollectionViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, LoadingView {
+    var activityIndicator = UIActivityIndicatorView()
+    var nftCollectionViewModel: NftCollectionViewModel
     
     private let coverImageView = UIImageView()
     private let collectionView: UICollectionView = {
@@ -89,9 +40,28 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
     private let authorLabel = UILabel()
     private let descriptionLabel = UILabel()
     
+    init(nftCollectionViewModel: NftCollectionViewModel) {
+        self.nftCollectionViewModel = nftCollectionViewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        nftCollectionViewModel.showLoadingHandler = { [weak self] in
+            guard let self = self else {return}
+            self.showLoading()
+        }
+        
+        nftCollectionViewModel.hideLoadingHandler = { [weak self] in
+            guard let self = self else {return}
+            self.hideLoading()
+        }
+        
         setUpNavigationBarBackButton()
         
         setUpCollectionCover()
@@ -99,6 +69,15 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
         setUpAuthorLabel()
         setUpDescriptionLabel()
         initCollection()
+
+        
+        nftCollectionViewModel.nftsBinding = { [weak self] _ in
+            guard let self = self else {return}
+            print("binding")
+            self.collectionView.reloadData()
+            
+        }
+        nftCollectionViewModel.fetchNfts()
         
     }
     
@@ -108,6 +87,9 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
         collectionView.register(NftCollectionViewCell.self, forCellWithReuseIdentifier: NftCollectionViewCell.identifier)
         
         view.addSubview(collectionView)
+        
+        collectionView.addSubview(activityIndicator)
+        activityIndicator.constraintCenters(to: collectionView)
         
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -128,12 +110,14 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
             return UICollectionViewCell()
         }
         cell.prepareForReuse()
-        cell.nftModel = mockData.nfts[indexPath.row]
+        //cell.nftModel = mockData.nfts[indexPath.row]
+        cell.nftModel = nftCollectionViewModel.nfts[indexPath.row]
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return mockData.nfts.count
+        //return mockData.nfts.count
+        return nftCollectionViewModel.nfts.count
     }
     
     //MARK: - Delegate
@@ -161,7 +145,7 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
     private func setUpCollectionCover() {
         view.addSubview(coverImageView)
         coverImageView.translatesAutoresizingMaskIntoConstraints = false
-        coverImageView.image = mockData.cover
+        coverImageView.image = UIImage(named: "blue.png")
         coverImageView.clipsToBounds = true
         coverImageView.layer.cornerRadius = 12
         coverImageView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
@@ -177,7 +161,7 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
         view.addSubview(nameLabel)
         nameLabel.font = UIFont.systemFont(ofSize: 22, weight: .bold)
         nameLabel.textAlignment = .left
-        nameLabel.text = mockData.title
+        nameLabel.text = nftCollectionViewModel.collectionInformation.title
         
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -190,7 +174,7 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
     
     private func setUpAuthorLabel() {
         view.addSubview(authorLabel)
-        let author = "Автор коллекции: " + mockData.author
+        let author = "Автор коллекции: " + nftCollectionViewModel.collectionInformation.author
         
         authorLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         authorLabel.textAlignment = .left
@@ -207,7 +191,7 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
     
     private func setUpDescriptionLabel() {
         view.addSubview(descriptionLabel)
-        descriptionLabel.text = mockData.description
+        descriptionLabel.text = nftCollectionViewModel.collectionInformation.description
         
         descriptionLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         descriptionLabel.lineBreakMode = .byWordWrapping
@@ -223,7 +207,6 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
     }
     
     private func setUpNavigationBarBackButton() {
-        //navigationItem.hidesBackButton = true
         self.navigationController?.navigationBar.topItem?.backBarButtonItem = UIBarButtonItem(title: " ", style: .plain, target: nil, action: nil)
         self.navigationController?.navigationBar.topItem?.backBarButtonItem?.tintColor = .black
     }

@@ -71,6 +71,7 @@ final class CatalogViewController: UIViewController, UITableViewDataSource, UITa
             return UITableViewCell()
         }
         cell.prepareForReuse()
+        print("set collection for each cell in cellForRowAt")
         cell.viewModel = collectionsViewModel.collections[indexPath.row]
         return cell
     }
@@ -85,7 +86,15 @@ final class CatalogViewController: UIViewController, UITableViewDataSource, UITa
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let vc = NftCollectionViewController()
+        let collection = collectionsViewModel.collections[indexPath.row].collection
+        let viewModel = NftCollectionViewModel(collectionInfo: NftCollection(
+            id: collection.id,
+            title: collection.title,
+            cover: collection.cover,
+            author: collection.author,
+            description: collection.description,
+            nfts: collection.nfts))
+        let vc = NftCollectionViewController(nftCollectionViewModel: viewModel)
         vc.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(vc, animated: true)
     }
