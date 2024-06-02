@@ -179,11 +179,6 @@ extension ProfileViewController: UITableViewDelegate {
             let myNFTVC = MyNFTViewController(viewModel: myNFTViewModel)
             hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(myNFTVC, animated: true)
-//        case 0:
-//            let myNFTViewModel = MyNFTViewModel()
-//            let myNFTVC = MyNFTViewController(viewModel: myNFTViewModel)
-//            hidesBottomBarWhenPushed = true
-//            navigationController?.pushViewController(myNFTVC, animated: true)
         case 1:
             let favouriteNFTViewModel = FavouriteNFTViewModel()
             let favouriteNFTVC = FavouriteNFTViewController(viewModel: favouriteNFTViewModel)
