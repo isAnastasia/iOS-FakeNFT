@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct NftCollection: Decodable {
+struct NftCollectionCover: Decodable {
     let id: String
     let nfts: [String]
     let name: String

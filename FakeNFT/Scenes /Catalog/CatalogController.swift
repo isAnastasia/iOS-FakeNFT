@@ -84,6 +84,12 @@ final class CatalogViewController: UIViewController, UITableViewDataSource, UITa
         return 179 + 8
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let vc = NftCollectionViewController()
+        vc.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
     //MARK: - Setting Up UI
     private func initTableView() {
         tableView.addSubview(activityIndicator)
