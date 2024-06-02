@@ -5,7 +5,6 @@
 //  Created by Dmitry Dmitry on 25.5.2024.
 //
 
-import UIKit
 
 final class MyNFTViewModel: MyNFTViewModelProtocol {
     
@@ -17,40 +16,29 @@ final class MyNFTViewModel: MyNFTViewModelProtocol {
     }
     
     var onNFTsUpdated: (() -> Void)?
+    var onLoadingStatusChanged: ((Bool) -> Void)?
+    
+    // MARK: - Private Properties
+    private let nftService: MyNFTServiceProtocol
     
     // MARK: - Initializers
-    init() {
-        loadMockData()
+    init(nftService: MyNFTServiceProtocol) {
+        self.nftService = nftService
+        loadNFTs()
     }
     
     // MARK: - Public Methods
-    func loadMockData() {
-        nfts = [
-            MyNFTModel(
-                images: ["liloNFT"],
-                name: "Lilo",
-                rating: 2,
-                price: 1.98,
-                id: "1",
-                description: "от John Doe"
-            ),
-            MyNFTModel(
-                images: ["springNFT"],
-                name: "Spring",
-                rating: 3,
-                price: 1.58,
-                id: "2",
-                description: "от John Doe"
-            ),
-            MyNFTModel(
-                images: ["aprilNFT"],
-                name: "April",
-                rating: 4,
-                price: 1.78,
-                id: "3",
-                description: "от John Doe"
-            )
-        ]
+    func loadNFTs() {
+        onLoadingStatusChanged?(true)
+        nftService.fetchNFTs { [weak self] result in
+            self?.onLoadingStatusChanged?(false)
+            switch result {
+            case .success(let nfts):
+                self?.nfts = nfts
+            case .failure(let error):
+                print("Failed to load NFTs: \(error)")
+            }
+        }
     }
     
     func getNFT(at index: Int) -> MyNFTModel? {

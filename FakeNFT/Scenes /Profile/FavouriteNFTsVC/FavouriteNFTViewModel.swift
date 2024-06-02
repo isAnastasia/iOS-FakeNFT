@@ -7,8 +7,23 @@
 
 import UIKit
 
+struct MyNFTModel1: Codable, Equatable {
+//    let createdAt: String
+    let images: [String]
+    let name: String
+    let rating: Int
+    let price: Double
+    let id: String
+    let description: String
+
+    func formattedPrice() -> String {
+        return String(format: "%.2f ETH", price).replacingOccurrences(of: ".", with: ",")
+    }
+}
+
 final class FavouriteNFTViewModel: FavouriteNFTViewModelProtocol {
-    var nfts: [MyNFTModel] = [] {
+    
+    var nfts: [MyNFTModel1] = [] {
         didSet {
             onNFTsUpdated?()
         }
@@ -22,7 +37,7 @@ final class FavouriteNFTViewModel: FavouriteNFTViewModelProtocol {
     
     func loadMockData() {
         nfts = [
-            MyNFTModel(
+            MyNFTModel1(
                 images: ["liloNFT"],
                 name: "Lilo",
                 rating: 2,
@@ -30,7 +45,7 @@ final class FavouriteNFTViewModel: FavouriteNFTViewModelProtocol {
                 id: "1",
                 description: "от John Doe"
             ),
-            MyNFTModel(
+            MyNFTModel1(
                 images: ["springNFT"],
                 name: "Spring",
                 rating: 3,
@@ -38,7 +53,7 @@ final class FavouriteNFTViewModel: FavouriteNFTViewModelProtocol {
                 id: "2",
                 description: "от John Doe"
             ),
-            MyNFTModel(
+            MyNFTModel1(
                 images: ["aprilNFT"],
                 name: "April",
                 rating: 4,
@@ -49,7 +64,7 @@ final class FavouriteNFTViewModel: FavouriteNFTViewModelProtocol {
         ]
     }
     
-    func getNFT(at index: Int) -> MyNFTModel? {
+    func getNFT(at index: Int) -> MyNFTModel1? {
         guard index >= 0 && index < nfts.count else { return nil }
         return nfts[index]
     }

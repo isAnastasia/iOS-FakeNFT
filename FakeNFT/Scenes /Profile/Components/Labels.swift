@@ -12,6 +12,7 @@ enum LabelsStyle {
     case userDescription
     case userWebsite
     case bold17LabelStyle
+    case myNFTPriceValueLabelStyle
     case regular15LabelStyle
     case aboutDeveloperLabel
     case nameLabelStyle
@@ -54,6 +55,11 @@ final class Labels: UILabel {
             self.font = UIFont.boldSystemFont(ofSize: 17)
             self.text = text
             self.textColor = .blackDay
+        case .myNFTPriceValueLabelStyle:
+            self.font = UIFont.boldSystemFont(ofSize: 17)
+            self.text = text
+            self.textColor = .blackDay
+            self.heightAnchor.constraint(equalToConstant: 22).isActive = true
         case .regular15LabelStyle:
             self.font = UIFont.systemFont(ofSize: 13, weight: .regular)
             self.text = text
@@ -85,6 +91,7 @@ final class Labels: UILabel {
             self.font = UIFont.systemFont(ofSize: 13, weight: .regular)
             self.text = "Цена"
             self.textColor = .blackDay
+            self.heightAnchor.constraint(equalToConstant: 18).isActive = true
         }
         self.translatesAutoresizingMaskIntoConstraints = false
     }

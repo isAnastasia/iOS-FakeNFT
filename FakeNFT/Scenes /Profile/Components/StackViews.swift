@@ -12,6 +12,7 @@ enum StackViewStyle {
     case vertical8Style2
     case horizontal16Style
     case vertical24Style
+    case horizontal39Style
     case vertical4Style
     case vertical2Style
     case horizontal4Style
@@ -55,6 +56,12 @@ final class StackViews: UIStackView {
             self.spacing = 16
             self.alignment = .fill
             self.distribution = .fill
+        case .horizontal39Style:
+            self.axis = .horizontal
+            self.spacing = 39
+            self.alignment = .fill
+            self.distribution = .fillEqually
+            self.heightAnchor.constraint(equalToConstant: 62).isActive = true
         case .vertical4Style:
             self.axis = .vertical
             self.spacing = 4
@@ -86,7 +93,7 @@ final class StackViews: UIStackView {
             self.axis = .vertical
             self.spacing = 2
             self.alignment = .leading
-            self.distribution = .equalSpacing
+            self.distribution = .fillEqually
             self.widthAnchor.constraint(equalToConstant: 75).isActive = true
             self.heightAnchor.constraint(equalToConstant: 42).isActive = true
         }

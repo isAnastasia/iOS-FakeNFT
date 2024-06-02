@@ -8,13 +8,16 @@
 import UIKit
 
 struct MyNFTModel: Codable, Equatable {
-//    let createdAt: String
-    let images: [String]
+    let id: String
     let name: String
+    let description: String
+    let images: [String]
     let rating: Int
     let price: Double
-    let id: String
-    let description: String
+    let author: String
+    var authorName: String {
+            return URL(string: author)?.host ?? "от John Doe"
+        }
     
     func formattedPrice() -> String {
         return String(format: "%.2f ETH", price).replacingOccurrences(of: ".", with: ",")

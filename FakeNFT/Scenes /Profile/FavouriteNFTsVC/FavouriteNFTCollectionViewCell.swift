@@ -34,7 +34,7 @@ final class FavouriteNFTCollectionViewCell: UICollectionViewCell, ReuseIdentifyi
     }
 
     // MARK: - Public Methods
-    func configure(with nft: MyNFTModel) {
+    func configure(with nft: MyNFTModel1) {
         nftImage.image = UIImage(named: nft.images.first ?? "")
         nftNameLabel.text = nft.name
         nftValuePriceLabel.text = nft.formattedPrice()

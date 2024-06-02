@@ -10,8 +10,9 @@ import UIKit
 protocol MyNFTViewModelProtocol {
     var nfts: [MyNFTModel] { get set }
     var onNFTsUpdated: (() -> Void)? { get set }
+    var onLoadingStatusChanged: ((Bool) -> Void)? { get set }
     
-    func loadMockData()
+    func loadNFTs()
     func getNFT(at index: Int) -> MyNFTModel?
     func numberOfNFTs() -> Int
     

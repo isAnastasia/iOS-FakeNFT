@@ -6,10 +6,11 @@
 //
 
 import UIKit
+import ProgressHUD
 
 final class MyNFTViewController: UIViewController {
     
-    // MARK: - Properties
+    // MARK: - Public Properties
     private var viewModel: MyNFTViewModelProtocol
     private let tableView = UITableView()
     private let stubLabel = Labels(style: .bold17LabelStyle, text: "У Вас ещё нет NFT")
@@ -32,13 +33,21 @@ final class MyNFTViewController: UIViewController {
         setupNavigationBar()
         setupTableView()
         setupStubLabel()
-        viewModel.loadMockData()
+        viewModel.loadNFTs()
     }
     
     // MARK: - Private Methods
     private func bindViewModel() {
         viewModel.onNFTsUpdated = { [weak self] in
             self?.updateView()
+        }
+        viewModel.onLoadingStatusChanged = { [weak self] isLoading in
+            if isLoading {
+                ProgressHUD.show()
+            } else {
+                ProgressHUD.dismiss()
+                self?.updateView()
+            }
         }
     }
     
@@ -94,6 +103,7 @@ final class MyNFTViewController: UIViewController {
             stubLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             stubLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
+        stubLabel.isHidden = true
     }
     
     private func updateView() {
@@ -138,4 +148,3 @@ extension MyNFTViewController: UITableViewDataSource {
         return cell
     }
 }
-
