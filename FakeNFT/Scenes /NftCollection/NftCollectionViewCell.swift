@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import Kingfisher
 
 final class NftCollectionViewCell: UICollectionViewCell {
     static let identifier = "NftCollectionViewCell"
@@ -14,7 +15,8 @@ final class NftCollectionViewCell: UICollectionViewCell {
     var nftModel: NftCellModel? {
         didSet {
             guard let model = nftModel else {return}
-            nftImageView.image = UIImage(named: "nft1.png")
+            //nftImageView.image = UIImage(named: "nft1.png")
+            self.loadImage(urlString: model.cover)
             nameLabel.text = model.name
             let str = String(model.price) + " ETH"
             priceLabel.text = str
@@ -194,6 +196,22 @@ final class NftCollectionViewCell: UICollectionViewCell {
             likeButton.setImage(UIImage(named: "like.png"), for: .normal)
         } else {
             likeButton.setImage(UIImage(named: "dislike.png"), for: .normal)
+        }
+    }
+    
+    private func loadImage(urlString: String) {
+        guard let encodingStr = urlString.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed) else {
+            print("error converting url")
+            return
+        }
+        let processor = RoundCornerImageProcessor(cornerRadius: 16)
+        if let imageUrl = URL(string: encodingStr) {
+            nftImageView.kf.indicatorType = .activity
+            nftImageView.kf.setImage(with: imageUrl, placeholder: UIImage(named: "Card.png"), options: [.processor(processor)])
+            nftImageView.contentMode = .scaleAspectFill
+            nftImageView.layer.cornerRadius = 16
+            nftImageView.layer.masksToBounds = false
+            nftImageView.clipsToBounds = true
         }
     }
     

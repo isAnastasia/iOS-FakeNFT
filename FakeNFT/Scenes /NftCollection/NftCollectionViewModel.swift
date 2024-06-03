@@ -31,11 +31,15 @@ final class NftCollectionViewModel {
         var fetchedNfts: [NftCellModel] = []
         let id = collectionInformation.nfts.first!
         print("\(id) to fetch")
+        
+        let group = DispatchGroup()
         showLoadingHandler?()
         for id in collectionInformation.nfts {
+            group.enter()
+            print("request started")
             provider.getNftById(id: id) { [weak self] result in
                 guard let self = self else {return}
-                print("get response from provider")
+                //print("get response from provider")
                 switch result {
                 case .success(let nftResult):
                     let cellInfo = NftCellModel(cover: nftResult.images.first!,
@@ -45,16 +49,24 @@ final class NftCollectionViewModel {
                                                 price: nftResult.price,
                                                 isInCart: self.checkIfNftIsInCart(id: nftResult.id))
                     fetchedNfts.append(cellInfo)
-                    print(nftResult)
-                    self.nfts.append(cellInfo)
-                    self.hideLoadingHandler?()
+                    print("request finished")
+                    group.leave()
+                    //print(nftResult)
+                    //self.nfts.append(cellInfo)
+                    //self.hideLoadingHandler?()
                 case .failure(let error):
                     print(error)
                     self.hideLoadingHandler?()
                 }
             }
+            
         }
         
+        group.notify(queue: .main) {
+            print("fetched all nft")
+            self.hideLoadingHandler?()
+            self.nfts = fetchedNfts
+        }
         
         
     }

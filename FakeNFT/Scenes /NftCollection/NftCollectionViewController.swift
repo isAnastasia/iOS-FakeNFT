@@ -73,7 +73,6 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
         
         nftCollectionViewModel.nftsBinding = { [weak self] _ in
             guard let self = self else {return}
-            print("binding")
             self.collectionView.reloadData()
             
         }
@@ -110,13 +109,11 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
             return UICollectionViewCell()
         }
         cell.prepareForReuse()
-        //cell.nftModel = mockData.nfts[indexPath.row]
         cell.nftModel = nftCollectionViewModel.nfts[indexPath.row]
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        //return mockData.nfts.count
         return nftCollectionViewModel.nfts.count
     }
     
@@ -141,11 +138,28 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
         return UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
     }
     
+    private func loadCover(urlString: String) {
+        guard let encodingStr = urlString.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed) else {
+            print("error converting url")
+            return
+        }
+        //let processor = RoundCornerImageProcessor(cornerRadius: 16)
+        if let imageUrl = URL(string: encodingStr) {
+            coverImageView.kf.indicatorType = .activity
+            coverImageView.kf.setImage(with: imageUrl, placeholder: UIImage(named: "Card.png"))
+            coverImageView.contentMode = .scaleAspectFill
+            //coverImageView.layer.cornerRadius = 16
+            //coverImageView.layer.masksToBounds = false
+            coverImageView.clipsToBounds = true
+        }
+    }
+    
     //MARK: - Setting Up UI
     private func setUpCollectionCover() {
         view.addSubview(coverImageView)
         coverImageView.translatesAutoresizingMaskIntoConstraints = false
-        coverImageView.image = UIImage(named: "blue.png")
+        //coverImageView.image = UIImage(named: "blue.png")
+        loadCover(urlString: nftCollectionViewModel.collectionInformation.cover)
         coverImageView.clipsToBounds = true
         coverImageView.layer.cornerRadius = 12
         coverImageView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
