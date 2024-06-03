@@ -38,6 +38,12 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
     }()
     private let nameLabel = UILabel()
     private let authorLabel = UILabel()
+    private let authorLinkLabel: UILabel = {
+        var label = UILabel()
+        label.textColor = .blueUniversal
+        label.font = UIFont.systemFont(ofSize: 15, weight: .regular)
+        return label
+    }()
     private let descriptionLabel = UILabel()
     
     init(nftCollectionViewModel: NftCollectionViewModel) {
@@ -55,11 +61,13 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
         nftCollectionViewModel.showLoadingHandler = { [weak self] in
             guard let self = self else {return}
             self.showLoading()
+            self.view.isUserInteractionEnabled = false
         }
         
         nftCollectionViewModel.hideLoadingHandler = { [weak self] in
             guard let self = self else {return}
             self.hideLoading()
+            self.view.isUserInteractionEnabled = true
         }
         
         setUpNavigationBarBackButton()
@@ -67,6 +75,7 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
         setUpCollectionCover()
         setUpCollectionNameLabel()
         setUpAuthorLabel()
+        setUpLinkLabel()
         setUpDescriptionLabel()
         initCollection()
 
@@ -79,6 +88,12 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
         nftCollectionViewModel.fetchNfts()
         
     }
+    //MARK: - Actions
+    @objc
+    func authorLinkDidTap() {
+        let vc = AuthorWebViewController(websiteLinkString: nftCollectionViewModel.websiteLink)
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
     
     //MARK: - Setting Up Collection View
     private func initCollection() {
@@ -88,6 +103,8 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
         view.addSubview(collectionView)
         
         collectionView.addSubview(activityIndicator)
+        activityIndicator.style = .medium
+        
         activityIndicator.constraintCenters(to: collectionView)
         
         collectionView.dataSource = self
@@ -143,13 +160,11 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
             print("error converting url")
             return
         }
-        //let processor = RoundCornerImageProcessor(cornerRadius: 16)
+
         if let imageUrl = URL(string: encodingStr) {
             coverImageView.kf.indicatorType = .activity
             coverImageView.kf.setImage(with: imageUrl, placeholder: UIImage(named: "Card.png"))
             coverImageView.contentMode = .scaleAspectFill
-            //coverImageView.layer.cornerRadius = 16
-            //coverImageView.layer.masksToBounds = false
             coverImageView.clipsToBounds = true
         }
     }
@@ -158,7 +173,6 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
     private func setUpCollectionCover() {
         view.addSubview(coverImageView)
         coverImageView.translatesAutoresizingMaskIntoConstraints = false
-        //coverImageView.image = UIImage(named: "blue.png")
         loadCover(urlString: nftCollectionViewModel.collectionInformation.cover)
         coverImageView.clipsToBounds = true
         coverImageView.layer.cornerRadius = 12
@@ -188,7 +202,7 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
     
     private func setUpAuthorLabel() {
         view.addSubview(authorLabel)
-        let author = "Автор коллекции: " + nftCollectionViewModel.collectionInformation.author
+        let author = "Автор коллекции:"
         
         authorLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         authorLabel.textAlignment = .left
@@ -199,7 +213,20 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
             authorLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8),
             authorLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             authorLabel.heightAnchor.constraint(equalToConstant: 28),
-            authorLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+        ])
+    }
+    
+    private func setUpLinkLabel() {
+        view.addSubview(authorLinkLabel)
+        authorLinkLabel.text = nftCollectionViewModel.collectionInformation.author
+        let tap = UITapGestureRecognizer(target: self, action: #selector(authorLinkDidTap))
+        authorLinkLabel.addGestureRecognizer(tap)
+        authorLinkLabel.isUserInteractionEnabled = true
+        authorLinkLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            authorLinkLabel.topAnchor.constraint(equalTo: authorLabel.topAnchor),
+            authorLinkLabel.leadingAnchor.constraint(equalTo: authorLabel.trailingAnchor, constant: 4),
+            authorLinkLabel.heightAnchor.constraint(equalToConstant: 28)
         ])
     }
     

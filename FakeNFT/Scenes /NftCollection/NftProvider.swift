@@ -9,7 +9,7 @@ import Foundation
 
 typealias NftResultCompletion = (Result<NftResultModel, Error>) -> Void
 typealias CartResultCompletion = (Result<CartResultModel, Error>) -> Void
-typealias FavouritesResultCompletion = (Result<FavouritesResultModel, Error>) -> Void
+typealias ProfileInfoResultCompletion = (Result<ProfileInfoResultModel, Error>) -> Void
 
 struct NftResultModel: Decodable {
     let id: String
@@ -24,8 +24,9 @@ struct CartResultModel: Decodable {
     let id: String
 }
 
-struct FavouritesResultModel: Decodable {
+struct ProfileInfoResultModel: Decodable {
     let likes: [String]
+    let website: String
     let id: String
 }
 
@@ -39,7 +40,7 @@ struct CartRequest: NetworkRequest {
     }
 }
 
-struct FavouritesRequest: NetworkRequest {
+struct ProfileInfoRequest: NetworkRequest {
     let baseUrl = NetworkConstants.baseURL
     var endpoint: URL? {
         URL(string: "\(baseUrl)/api/v1/profile/1")
@@ -80,9 +81,9 @@ final class NftProvider {
         }
     }
     
-    func getMyFavourites(completion: @escaping FavouritesResultCompletion) {
-        let request = FavouritesRequest()
-        networkClient.send(request: request, type: FavouritesResultModel.self) { [weak self] result in
+    func getMyFavourites(completion: @escaping ProfileInfoResultCompletion) {
+        let request = ProfileInfoRequest()
+        networkClient.send(request: request, type: ProfileInfoResultModel.self) { [weak self] result in
             switch result {
             case .success(let likes):
                 completion(.success(likes))

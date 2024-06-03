@@ -12,10 +12,9 @@ final class NftCollectionViewModel {
     var nftsBinding: Binding<[NftCellModel]>?
     var showLoadingHandler: (() -> ())?
     var hideLoadingHandler: (() -> ())?
-    
+    var websiteLink = ""
     private(set) var nfts: [NftCellModel] = []{
         didSet {
-            print("DID set")
             nftsBinding?(nfts)
         }
     }
@@ -51,6 +50,7 @@ final class NftCollectionViewModel {
             switch result {
             case .success(let userInfo):
                 self.likedNfts = Set(userInfo.likes)
+                self.websiteLink = userInfo.website
             case .failure(let error):
                 print(error)
             }
@@ -77,8 +77,6 @@ final class NftCollectionViewModel {
         }
         
         group.notify(queue: .main) {
-            print("fetched all nft")
-            print(self.nftsInCart)
             self.hideLoadingHandler?()
             var allNfts = fetchedNfts.map {
                 return NftCellModel(cover: $0.images.first!,
