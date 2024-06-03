@@ -174,18 +174,16 @@ extension ProfileViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         switch indexPath.row {
         case 0:
-            let myNFTViewModel = MyNFTViewModel()
+            let nftService = MyNFTService()
+            let myNFTViewModel = MyNFTViewModel(nftService: nftService)
             let myNFTVC = MyNFTViewController(viewModel: myNFTViewModel)
-            hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(myNFTVC, animated: true)
         case 1:
             let favouriteNFTViewModel = FavouriteNFTViewModel()
             let favouriteNFTVC = FavouriteNFTViewController(viewModel: favouriteNFTViewModel)
-            hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(favouriteNFTVC, animated: true)
         case 2:
             let aboutDeveloperVC = AboutDeveloperViewController()
-            hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(aboutDeveloperVC, animated: true)
         default:
             break

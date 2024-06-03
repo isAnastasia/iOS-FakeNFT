@@ -12,9 +12,21 @@ final class AboutDeveloperViewController: UIViewController {
     // MARK: - Private Properties
     private let aboutDeveloperImageView = ImageViews(style: .aboutDeveloperStyle)
     
+    // MARK: - Initializers
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        self.hidesBottomBarWhenPushed = true
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        self.hidesBottomBarWhenPushed = true
+    }
+    
     // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.hidesBottomBarWhenPushed = true
         view.backgroundColor = .black
         setupNavigationBar()
         setupViewsAndConstraints()
@@ -34,14 +46,21 @@ final class AboutDeveloperViewController: UIViewController {
         
         navigationItem.leftBarButtonItem = backBarButtonItem
         
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .white
+        appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
+        appearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
+        
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.compactAppearance = appearance
+        
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationController?.navigationBar.shadowImage = UIImage()
         navigationController?.navigationBar.isTranslucent = true
         
-        navigationController?.navigationBar.tintColor = .whiteDay
-        
-        let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
-        navigationController?.navigationBar.titleTextAttributes = textAttributes
+        navigationController?.navigationBar.tintColor = .blackDay
     }
     
     // MARK: - Event Handler (Actions)

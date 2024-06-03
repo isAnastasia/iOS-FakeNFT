@@ -13,8 +13,6 @@ final class MyNFTTableViewCell: UITableViewCell {
     // MARK: - Static Properties
     static let reuseIdentifier = "MyNFTTableViewCell"
     
-    // MARK: - Public properties
-    
     // MARK: - Private Properties
     private let cellHeight: CGFloat = 140
     
@@ -22,7 +20,7 @@ final class MyNFTTableViewCell: UITableViewCell {
     private let myNFTAuthorLabel = Labels(style: .myNFTAuthorLabelStyle)
     
     private let myNFTPriceLabel = Labels(style: .myNFTPriceLabelStyle)
-    private let myNFTValuePriceLabel = Labels(style: .bold17LabelStyle)
+    private let myNFTValuePriceLabel = Labels(style: .myNFTPriceValueLabelStyle)
     
     private let myNFTImage = ImageViews(style: .myNFTStyle)
     private let myNFTLikeButton = Buttons(style: .smallLikeButtonStyle)
@@ -31,6 +29,7 @@ final class MyNFTTableViewCell: UITableViewCell {
     
     private let myNFTDescriptionStackView = StackViews(style: .myNFTDescriptionStyle)
     private let myNFTPriceStackView = StackViews(style: .myNFTPriceStyle)
+    private let myNFTMainStackView = StackViews(style: .horizontal39Style)
     
     // MARK: - Initializers
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -49,23 +48,20 @@ final class MyNFTTableViewCell: UITableViewCell {
         myNFTNameLabel.text = myNFT.name
         myNFTValuePriceLabel.text = myNFT.formattedPrice()
         myNFTRatingImage.setupRating(rating: myNFT.rating)
+        myNFTAuthorLabel.text = "от \(myNFT.authorName)"
     }
     
     // MARK: - Private Methods
     private func loadNFTImage(from imageName: String?) {
-        guard let imageName = imageName else { return }
-        myNFTImage.image = UIImage(named: imageName)
-    }
-    
-    private func formattedPrice(from price: Double) -> String {
-        return String(format: "%.2f ETH", price).replacingOccurrences(of: ".", with: ",")
+        guard let imageName = imageName, let imageUrl = URL(string: imageName) else { return }
+        myNFTImage.kf.setImage(with: imageUrl)
     }
 }
 
 extension MyNFTTableViewCell {
     // MARK: - Layout
     private func setupViewsAndConstraints() {
-        [myNFTImage, myNFTLikeButton, myNFTDescriptionStackView, myNFTPriceStackView].forEach {
+        [myNFTImage, myNFTLikeButton, myNFTMainStackView].forEach {
             contentView.addSubview($0)
         }
         
@@ -77,20 +73,21 @@ extension MyNFTTableViewCell {
             myNFTPriceStackView.addArrangedSubview($0)
         }
         
+        [myNFTDescriptionStackView, myNFTPriceStackView].forEach {
+            myNFTMainStackView.addArrangedSubview($0)
+        }
+        
         NSLayoutConstraint.activate([
             myNFTImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
             myNFTImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            myNFTImage.trailingAnchor.constraint(equalTo: myNFTDescriptionStackView.leadingAnchor, constant: -20),
+            myNFTImage.trailingAnchor.constraint(equalTo: myNFTMainStackView.leadingAnchor, constant: -20),
             myNFTImage.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
             
             myNFTLikeButton.topAnchor.constraint(equalTo: myNFTImage.topAnchor, constant: 0),
             myNFTLikeButton.trailingAnchor.constraint(equalTo: myNFTImage.trailingAnchor, constant: 0),
             
-            myNFTDescriptionStackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            myNFTDescriptionStackView.trailingAnchor.constraint(equalTo: myNFTPriceStackView.leadingAnchor, constant: -39),
-            
-            myNFTPriceStackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+            myNFTMainStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            myNFTMainStackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }
 }
-
