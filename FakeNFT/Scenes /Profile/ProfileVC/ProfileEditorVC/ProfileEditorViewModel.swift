@@ -10,7 +10,7 @@ import UIKit
 final class ProfileEditorViewModel: ProfileEditorViewModelProtocol {
     // MARK: - Public Properties
     var userProfile: UserProfileModel
-    var onProfileUpdated: ((UserProfileModel) -> Void)?
+    var onProfileUpdated: ((UserProfileModel) -> ())?
     private let profileNetworkService: ProfileNetworkService
     
     // MARK: - Initializers
@@ -32,7 +32,7 @@ final class ProfileEditorViewModel: ProfileEditorViewModelProtocol {
         userProfile = userProfile.updateUserWebsite(website)
     }
     
-    func saveProfileData(completion: @escaping (Result<UserProfileModel, Error>) -> Void) {
+    func saveProfileData(completion: @escaping (Result<UserProfileModel, Error>) -> ()) {
         var encodedLikes = userProfile.likes.map { String($0) }.joined(separator: ",")
         if encodedLikes.isEmpty {
             encodedLikes = "null"

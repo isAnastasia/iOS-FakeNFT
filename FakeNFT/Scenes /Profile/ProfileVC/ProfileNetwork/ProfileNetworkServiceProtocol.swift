@@ -8,6 +8,6 @@
 import UIKit
 
 protocol ProfileNetworkServiceProtocol {
-    func fetchProfile(completion: @escaping (Result<UserProfileModel, Error>) -> Void)
+    func fetchProfile(completion: @escaping (Result<UserProfileModel, Error>) -> ())
     func updateProfile(profileData: String, completion: @escaping (Result<UserProfileModel, Error>) -> Void)
 }
