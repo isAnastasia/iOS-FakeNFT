@@ -19,6 +19,8 @@ final class NftCollectionViewModel {
             nftsBinding?(nfts)
         }
     }
+    private var likedNfts: Set<String> = []
+    private var nftsInCart: Set<String> = []
     private let provider: NftProvider
     
     init(collectionInfo: NftCollection) {
@@ -27,55 +29,80 @@ final class NftCollectionViewModel {
     }
     
     func fetchNfts() {
-        print("fetch nfts")
-        var fetchedNfts: [NftCellModel] = []
-        let id = collectionInformation.nfts.first!
-        print("\(id) to fetch")
-        
         let group = DispatchGroup()
+        var fetchedNfts: [NftResultModel] = []
         showLoadingHandler?()
+        
+        group.enter()
+        provider.getMyCart { [weak self] result in
+            guard let self = self else {return}
+            switch result {
+            case .success(let cart):
+                self.nftsInCart = Set(cart.nfts)
+            case .failure(let error):
+                print(error)
+            }
+            group.leave()
+        }
+        
+        group.enter()
+        provider.getMyFavourites { [weak self] result in
+            guard let self = self else {return}
+            switch result {
+            case .success(let userInfo):
+                self.likedNfts = Set(userInfo.likes)
+            case .failure(let error):
+                print(error)
+            }
+            group.leave()
+        }
+        
+        
         for id in collectionInformation.nfts {
             group.enter()
             print("request started")
             provider.getNftById(id: id) { [weak self] result in
                 guard let self = self else {return}
-                //print("get response from provider")
                 switch result {
                 case .success(let nftResult):
-                    let cellInfo = NftCellModel(cover: nftResult.images.first!,
-                                                name: nftResult.name,
-                                                stars: nftResult.rating,
-                                                isLiked: self.checkIfNftIsLiked(id: nftResult.id),
-                                                price: nftResult.price,
-                                                isInCart: self.checkIfNftIsInCart(id: nftResult.id))
-                    fetchedNfts.append(cellInfo)
+                    fetchedNfts.append(nftResult)
                     print("request finished")
                     group.leave()
-                    //print(nftResult)
-                    //self.nfts.append(cellInfo)
-                    //self.hideLoadingHandler?()
                 case .failure(let error):
                     print(error)
+                    group.leave()
                     self.hideLoadingHandler?()
                 }
             }
-            
         }
         
         group.notify(queue: .main) {
             print("fetched all nft")
+            print(self.nftsInCart)
             self.hideLoadingHandler?()
-            self.nfts = fetchedNfts
+            var allNfts = fetchedNfts.map {
+                return NftCellModel(cover: $0.images.first!,
+                                    name: $0.name,
+                                    stars: $0.rating,
+                                    isLiked: self.checkIfNftIsLiked(id: $0.id),
+                                    price: $0.price,
+                                    isInCart: self.checkIfNftIsInCart(id: $0.id))
+            }
+            self.nfts = allNfts
         }
-        
-        
     }
     
     private func checkIfNftIsLiked(id: String) -> Bool {
+        if likedNfts.contains(id) {
+            return true
+        }
         return false
     }
     
     private func checkIfNftIsInCart(id: String) -> Bool {
+        if nftsInCart.contains(id) {
+            return true
+        }
         return false
     }
 }

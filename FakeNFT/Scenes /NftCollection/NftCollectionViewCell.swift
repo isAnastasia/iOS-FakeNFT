@@ -185,7 +185,7 @@ final class NftCollectionViewCell: UICollectionViewCell {
     
     private func updateCartButton(isInCart: Bool) {
         if isInCart {
-            cartButton.setImage(UIImage(named: "Cart.png"), for: .normal)
+            cartButton.setImage(UIImage(named: "cart.png"), for: .normal)
         } else {
             cartButton.setImage(UIImage(named: "noCart.png"), for: .normal)
         }
