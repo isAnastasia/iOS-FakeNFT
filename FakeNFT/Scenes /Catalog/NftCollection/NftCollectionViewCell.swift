@@ -5,7 +5,6 @@
 //  Created by Anastasia Gorbunova on 02.06.2024.
 //
 
-import Foundation
 import UIKit
 import Kingfisher
 
@@ -42,6 +41,8 @@ final class NftCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 17, weight: .bold)
         label.textAlignment = .left
+        label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 0
         return label
     }()
     private let cartButton: UIButton = {
@@ -60,6 +61,7 @@ final class NftCollectionViewCell: UICollectionViewCell {
         return stars
     }()
     
+    //MARK: - Initialisation
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.backgroundColor = .systemBackground
@@ -86,6 +88,7 @@ final class NftCollectionViewCell: UICollectionViewCell {
         //TODO
     }
     
+    //MARK: - Setting Up UI
     private func setUpImageView() {
         contentView.addSubview(nftImageView)
         nftImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -173,6 +176,7 @@ final class NftCollectionViewCell: UICollectionViewCell {
         ])
     }
     
+    //MARK: - Updating Cell Information
     private func updateRating(rating: Int) {
         for i in 0..<rating {
             if let starImage = UIImage(named: "goldStar.png") {
@@ -198,18 +202,15 @@ final class NftCollectionViewCell: UICollectionViewCell {
     }
     
     private func loadImage(urlString: String) {
-        guard let encodingStr = urlString.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed) else {
-            print("error converting url")
-            return
-        }
-        let processor = RoundCornerImageProcessor(cornerRadius: 16)
-        if let imageUrl = URL(string: encodingStr) {
-            nftImageView.kf.indicatorType = .activity
-            nftImageView.kf.setImage(with: imageUrl, placeholder: UIImage(named: "Card.png"), options: [.processor(processor)])
-            nftImageView.contentMode = .scaleAspectFill
-            nftImageView.layer.cornerRadius = 16
-            nftImageView.layer.masksToBounds = false
-            nftImageView.clipsToBounds = true
+        if let encodingStr = urlString.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)  {
+            if let imageUrl = URL(string: encodingStr) {
+                nftImageView.kf.indicatorType = .activity
+                nftImageView.kf.setImage(with: imageUrl, placeholder: UIImage(named: "Card.png"))
+                nftImageView.contentMode = .scaleAspectFill
+                nftImageView.layer.cornerRadius = 16
+                nftImageView.layer.masksToBounds = false
+                nftImageView.clipsToBounds = true
+            }
         }
     }
 }

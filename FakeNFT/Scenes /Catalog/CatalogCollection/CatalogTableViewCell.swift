@@ -83,10 +83,9 @@ final class CatalogTableViewCell: UITableViewCell {
             print("error converting url")
             return
         }
-        let processor = RoundCornerImageProcessor(cornerRadius: 16)
         if let imageUrl = URL(string: encodingStr) {
             imageCard.kf.indicatorType = .activity
-            imageCard.kf.setImage(with: imageUrl, placeholder: UIImage(named: "Card.png"), options: [.processor(processor)]) 
+            imageCard.kf.setImage(with: imageUrl, placeholder: UIImage(named: "Card.png"))
             imageCard.contentMode = .scaleAspectFill
             imageCard.layer.cornerRadius = 16
             imageCard.layer.masksToBounds = false

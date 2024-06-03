@@ -5,26 +5,7 @@
 //  Created by Anastasia Gorbunova on 02.06.2024.
 //
 
-import Foundation
 import UIKit
-
-struct NftCollection {
-    let id: String
-    let title: String
-    let cover: String
-    let author: String
-    let description: String
-    let nfts: [String]
-    
-    init(id: String, title: String, cover: String, author: String, description: String, nfts: [String]) {
-        self.id = id
-        self.title = title
-        self.cover = cover
-        self.author = author
-        self.description = description
-        self.nfts = nfts
-    }
-}
 
 final class NftCollectionViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, LoadingView {
     var activityIndicator = UIActivityIndicatorView()
@@ -36,16 +17,37 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collectionView
     }()
-    private let nameLabel = UILabel()
-    private let authorLabel = UILabel()
+    private let nameLabel: UILabel = {
+        var label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 22, weight: .bold)
+        label.textAlignment = .left
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    private let authorLabel: UILabel = {
+        var label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 13, weight: .regular)
+        label.textAlignment = .left
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
     private let authorLinkLabel: UILabel = {
         var label = UILabel()
         label.textColor = .blueUniversal
         label.font = UIFont.systemFont(ofSize: 15, weight: .regular)
         return label
     }()
-    private let descriptionLabel = UILabel()
+    private let descriptionLabel: UILabel = {
+        var label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 13, weight: .regular)
+        label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 0
+        label.textAlignment = .left
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
     
+    //MARK: - Initialisation
     init(nftCollectionViewModel: NftCollectionViewModel) {
         self.nftCollectionViewModel = nftCollectionViewModel
         super.init(nibName: nil, bundle: nil)
@@ -74,22 +76,14 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
             guard let self = self else {return}
             self.showErrorAlert()
         }
-        setUpNavigationBarBackButton()
-        
-        setUpCollectionCover()
-        setUpCollectionNameLabel()
-        setUpAuthorLabel()
-        setUpLinkLabel()
-        setUpDescriptionLabel()
-        initCollection()
-
         
         nftCollectionViewModel.nftsBinding = { [weak self] _ in
             guard let self = self else {return}
             self.collectionView.reloadData()
             
         }
-        //nftCollectionViewModel.fetchNfts()
+        
+        setUpUI()
         nftCollectionViewModel.fetchDataToDisplay()
         
     }
@@ -141,7 +135,7 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
     
     //MARK: - Delegate
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let availableWidth = collectionView.frame.width - 2 * Constants.insetsBetweenCells - 2 * Constants.leftRightInsets
+        let availableWidth = collectionView.frame.width - 2 * Constants.minimumInteritemSpacing - 2 * Constants.leftRightInsets
         let cellWidth =  availableWidth / 3
         
         let cellHeight = cellWidth + Constants.spaceBetweenCoverAndInfo + Constants.infoHeight
@@ -149,36 +143,44 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 9
+        return Constants.minimumInteritemSpacing
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 28
+        return Constants.minimumLineSpacing
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
     }
     
+    //MARK: - Load Cover
     private func loadCover(urlString: String) {
-        guard let encodingStr = urlString.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed) else {
-            print("error converting url")
-            return
-        }
-
-        if let imageUrl = URL(string: encodingStr) {
-            coverImageView.kf.indicatorType = .activity
-            coverImageView.kf.setImage(with: imageUrl, placeholder: UIImage(named: "Card.png"))
-            coverImageView.contentMode = .scaleAspectFill
-            coverImageView.clipsToBounds = true
+        if let encodingStr = urlString.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed) {
+            if let imageUrl = URL(string: encodingStr) {
+                coverImageView.kf.indicatorType = .activity
+                coverImageView.kf.setImage(with: imageUrl, placeholder: UIImage(named: "Card.png"))
+                coverImageView.contentMode = .scaleAspectFill
+                coverImageView.clipsToBounds = true
+            }
         }
     }
     
     //MARK: - Setting Up UI
+    private func setUpUI() {
+        setUpNavigationBarBackButton()
+        setUpCollectionCover()
+        setUpCollectionNameLabel()
+        setUpAuthorLabel()
+        setUpLinkLabel()
+        setUpDescriptionLabel()
+        initCollection()
+    }
+    
     private func setUpCollectionCover() {
         view.addSubview(coverImageView)
         coverImageView.translatesAutoresizingMaskIntoConstraints = false
-        loadCover(urlString: nftCollectionViewModel.collectionInformation.cover)
+        self.loadCover(urlString: nftCollectionViewModel.collectionInformation.cover)
         coverImageView.clipsToBounds = true
         coverImageView.layer.cornerRadius = 12
         coverImageView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
@@ -192,11 +194,7 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
     
     private func setUpCollectionNameLabel() {
         view.addSubview(nameLabel)
-        nameLabel.font = UIFont.systemFont(ofSize: 22, weight: .bold)
-        nameLabel.textAlignment = .left
         nameLabel.text = nftCollectionViewModel.collectionInformation.title
-        
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             nameLabel.topAnchor.constraint(equalTo: coverImageView.bottomAnchor, constant: 16),
@@ -207,13 +205,7 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
     
     private func setUpAuthorLabel() {
         view.addSubview(authorLabel)
-        let author = "Автор коллекции:"
-        
-        authorLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        authorLabel.textAlignment = .left
-        authorLabel.text = author
-        
-        authorLabel.translatesAutoresizingMaskIntoConstraints = false
+        authorLabel.text = "Автор коллекции:"
         NSLayoutConstraint.activate([
             authorLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8),
             authorLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -238,13 +230,6 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
     private func setUpDescriptionLabel() {
         view.addSubview(descriptionLabel)
         descriptionLabel.text = nftCollectionViewModel.collectionInformation.description
-        
-        descriptionLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        descriptionLabel.lineBreakMode = .byWordWrapping
-        descriptionLabel.numberOfLines = 0
-        descriptionLabel.textAlignment = .left
-        
-        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             descriptionLabel.topAnchor.constraint(equalTo: authorLabel.bottomAnchor),
             descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -273,8 +258,9 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
 
 //MARK: - Constants
 private struct Constants {
-    static let insetsBetweenCells: Double = 9
     static let leftRightInsets: Double = 16
     static let spaceBetweenCoverAndInfo: Double = 8
     static let infoHeight: Double = 56
+    static let minimumInteritemSpacing: Double = 9
+    static let minimumLineSpacing: Double = 28
 }

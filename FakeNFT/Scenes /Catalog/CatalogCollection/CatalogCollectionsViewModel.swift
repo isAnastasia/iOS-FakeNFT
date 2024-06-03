@@ -73,7 +73,6 @@ final class CatalogCollectionsViewModel {
             case .failure(let error):
                 self.hideLoadingHandler?()
                 self.errorBinding?()
-                print(error)
             }
         }
     }

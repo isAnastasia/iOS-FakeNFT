@@ -29,65 +29,78 @@ final class NftCollectionViewModel {
         self.provider = NftProvider(networkClient: DefaultNetworkClient())
     }
     
+    //MARK: - Public Methods
     func fetchDataToDisplay() {
-        fetchNfts { [weak self] result in
+        self.showLoadingHandler?()
+        fetchData { [weak self] result in
+            self?.hideLoadingHandler?()
             switch result {
             case .success(let nfts):
                 self?.nfts = nfts
-            case .failure(let error):
-                self?.hideLoadingHandler?()
+            case .failure(_):
                 self?.errorHandler?()
             }
         }
     }
     
-    func fetchNfts(completion: @escaping (Result<[NftCellModel], Error>) -> Void) {
-        let group = DispatchGroup()
-        var fetchedNfts: [NftResultModel] = []
-        showLoadingHandler?()
-        
-        group.enter()
+    //MARK: - Private Methods
+    private func fetchData(completion: @escaping (Result<[NftCellModel], Error>) -> Void) {
         provider.getMyCart { [weak self] result in
-            guard let self = self else {return}
             switch result {
             case .success(let cart):
-                self.nftsInCart = Set(cart.nfts)
-                //group.leave()
+                self?.nftsInCart = Set(cart.nfts)
+                self?.getMyLikes { [weak self] result in
+                    switch result {
+                    case .success(let userInfo):
+                        self?.likedNfts = Set(userInfo.likes)
+                        self?.websiteLink = userInfo.website
+                        self?.getNfts { [weak self] result in
+                            self?.handleResult(result: result, completion: completion)
+                        }
+                    case .failure(let error):
+                        self?.handleResult(result: .failure(error), completion: completion)
+                    }
+                    
+                }
             case .failure(let error):
-                print(error)
+                self?.handleResult(result: .failure(error), completion: completion)
+            }
+        }
+    }
+    
+    private func handleResult<T>(result: Result<T, Error>, completion: @escaping (Result<T, Error>) -> Void) {
+        DispatchQueue.main.async {
+            switch result {
+            case .success(let succes):
+                completion(.success(succes))
+            case .failure(let error):
                 completion(.failure(error))
             }
-            group.leave()
         }
-        
-        group.enter()
+    }
+    
+    private func getMyLikes(completion: @escaping ProfileInfoResultCompletion) {
         provider.getMyFavourites { [weak self] result in
-            guard let self = self else {return}
             switch result {
             case .success(let userInfo):
-                self.likedNfts = Set(userInfo.likes)
-                self.websiteLink = userInfo.website
-                //group.leave()
+                completion(.success(userInfo))
             case .failure(let error):
-                print(error)
                 completion(.failure(error))
             }
-            group.leave()
         }
-        
+    }
+    
+    private func getNfts(completion: @escaping (Result<[NftCellModel], Error>) -> Void) {
+        let group = DispatchGroup()
+        var fetchedNfts: [NftResultModel] = []
         
         for id in collectionInformation.nfts {
             group.enter()
             provider.getNftById(id: id) { [weak self] result in
-                guard let self = self else {return}
                 switch result {
                 case .success(let nftResult):
                     fetchedNfts.append(nftResult)
-                    //group.leave()
                 case .failure(let error):
-                    print(error)
-                    //group.leave()
-                    //self.hideLoadingHandler?()
                     completion(.failure(error))
                 }
                 group.leave()
@@ -95,8 +108,7 @@ final class NftCollectionViewModel {
         }
         
         group.notify(queue: .main) {
-            self.hideLoadingHandler?()
-            var allNfts = fetchedNfts.map {
+            let allNfts = fetchedNfts.map {
                 return NftCellModel(cover: $0.images.first!,
                                     name: $0.name,
                                     stars: $0.rating,
@@ -105,7 +117,6 @@ final class NftCollectionViewModel {
                                     isInCart: self.checkIfNftIsInCart(id: $0.id))
             }
             completion(.success(allNfts))
-            //self.nfts = allNfts
         }
     }
     
