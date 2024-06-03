@@ -10,7 +10,7 @@ import WebKit
 
 final class AuthorWebViewController: UIViewController, WKNavigationDelegate, LoadingView {
     var activityIndicator = UIActivityIndicatorView()
-    lazy var webView: WKWebView = {
+    private lazy var webView: WKWebView = {
         let wv = WKWebView(frame: view.frame)
         wv.navigationDelegate = self
         return wv
