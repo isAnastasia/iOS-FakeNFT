@@ -205,7 +205,7 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
     
     private func setUpAuthorLabel() {
         view.addSubview(authorLabel)
-        authorLabel.text = "Автор коллекции:"
+        authorLabel.text = NSLocalizedString("Author", comment: "")
         NSLayoutConstraint.activate([
             authorLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8),
             authorLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
