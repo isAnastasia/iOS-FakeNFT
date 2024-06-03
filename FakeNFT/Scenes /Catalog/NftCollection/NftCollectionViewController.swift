@@ -70,6 +70,10 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
             self.view.isUserInteractionEnabled = true
         }
         
+        nftCollectionViewModel.errorHandler = { [weak self] in
+            guard let self = self else {return}
+            self.showErrorAlert()
+        }
         setUpNavigationBarBackButton()
         
         setUpCollectionCover()
@@ -85,7 +89,8 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
             self.collectionView.reloadData()
             
         }
-        nftCollectionViewModel.fetchNfts()
+        //nftCollectionViewModel.fetchNfts()
+        nftCollectionViewModel.fetchDataToDisplay()
         
     }
     //MARK: - Actions
@@ -250,6 +255,19 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
     private func setUpNavigationBarBackButton() {
         self.navigationController?.navigationBar.topItem?.backBarButtonItem = UIBarButtonItem(title: " ", style: .plain, target: nil, action: nil)
         self.navigationController?.navigationBar.topItem?.backBarButtonItem?.tintColor = .black
+    }
+    
+    //MARK: - Error Alert
+    private func showErrorAlert() {
+        let alert = UIAlertController(
+            title: NSLocalizedString("Error.title", comment: ""),
+            message: NSLocalizedString("Error.network", comment: ""),
+            preferredStyle: .alert)
+        alert.addAction(UIAlertAction(
+            title: NSLocalizedString("Ok", comment: ""),
+            style: .cancel,
+            handler: nil))
+        present(alert, animated: true, completion: nil)
     }
 }
 

@@ -12,6 +12,7 @@ final class NftCollectionViewModel {
     var nftsBinding: Binding<[NftCellModel]>?
     var showLoadingHandler: (() -> ())?
     var hideLoadingHandler: (() -> ())?
+    var errorHandler: (() -> ())?
     var websiteLink = ""
     
     private(set) var nfts: [NftCellModel] = []{
@@ -28,7 +29,19 @@ final class NftCollectionViewModel {
         self.provider = NftProvider(networkClient: DefaultNetworkClient())
     }
     
-    func fetchNfts() {
+    func fetchDataToDisplay() {
+        fetchNfts { [weak self] result in
+            switch result {
+            case .success(let nfts):
+                self?.nfts = nfts
+            case .failure(let error):
+                self?.hideLoadingHandler?()
+                self?.errorHandler?()
+            }
+        }
+    }
+    
+    func fetchNfts(completion: @escaping (Result<[NftCellModel], Error>) -> Void) {
         let group = DispatchGroup()
         var fetchedNfts: [NftResultModel] = []
         showLoadingHandler?()
@@ -39,8 +52,10 @@ final class NftCollectionViewModel {
             switch result {
             case .success(let cart):
                 self.nftsInCart = Set(cart.nfts)
+                //group.leave()
             case .failure(let error):
                 print(error)
+                completion(.failure(error))
             }
             group.leave()
         }
@@ -52,8 +67,10 @@ final class NftCollectionViewModel {
             case .success(let userInfo):
                 self.likedNfts = Set(userInfo.likes)
                 self.websiteLink = userInfo.website
+                //group.leave()
             case .failure(let error):
                 print(error)
+                completion(.failure(error))
             }
             group.leave()
         }
@@ -66,12 +83,14 @@ final class NftCollectionViewModel {
                 switch result {
                 case .success(let nftResult):
                     fetchedNfts.append(nftResult)
-                    group.leave()
+                    //group.leave()
                 case .failure(let error):
                     print(error)
-                    group.leave()
-                    self.hideLoadingHandler?()
+                    //group.leave()
+                    //self.hideLoadingHandler?()
+                    completion(.failure(error))
                 }
+                group.leave()
             }
         }
         
@@ -85,7 +104,8 @@ final class NftCollectionViewModel {
                                     price: $0.price,
                                     isInCart: self.checkIfNftIsInCart(id: $0.id))
             }
-            self.nfts = allNfts
+            completion(.success(allNfts))
+            //self.nfts = allNfts
         }
     }
     

@@ -45,6 +45,7 @@ final class AuthorWebViewController: UIViewController, WKNavigationDelegate, Loa
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         self.hideLoading()
+        self.showErrorAlert()
     }
     
     //MARK: - Setting Up UI
@@ -76,12 +77,25 @@ final class AuthorWebViewController: UIViewController, WKNavigationDelegate, Loa
         activityIndicator.constraintCenters(to: view)
     }
     
-    //MARK: - Loading WebView
+    //MARK: - Private methods
     private func loadWebView() {
         if let url = URL(string: websiteLinkString) {
             webView.load(URLRequest(url: url))
         } else {
-            //show error
+            showErrorAlert()
         }
+    }
+    
+    //MARK: - Error Alert
+    private func showErrorAlert() {
+        let alert = UIAlertController(
+            title: NSLocalizedString("Error.title", comment: ""),
+            message: NSLocalizedString("Error.network", comment: ""),
+            preferredStyle: .alert)
+        alert.addAction(UIAlertAction(
+            title: NSLocalizedString("Ok", comment: ""),
+            style: .cancel,
+            handler: nil))
+        present(alert, animated: true, completion: nil)
     }
 }
