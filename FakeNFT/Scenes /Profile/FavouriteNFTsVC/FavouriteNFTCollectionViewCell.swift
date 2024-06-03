@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Kingfisher
 
 final class FavouriteNFTCollectionViewCell: UICollectionViewCell, ReuseIdentifying {
     
@@ -22,24 +21,28 @@ final class FavouriteNFTCollectionViewCell: UICollectionViewCell, ReuseIdentifyi
     
     private let descriptionStackView = StackViews(style: .vertical4Style2)
     private let mainStackView = StackViews(style: .vertical8Style2)
-
+    
+    private var likeButtonAction: (() -> Void)?
+    
     // MARK: - Initializers
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = .systemBackground
         setupViewsAndConstraints()
+        setupNFTLikeButton()
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - Public Methods
-    func configure(with nft: MyNFTModel) {
+    func configure(with nft: MyNFTModel, likeButtonAction: @escaping () -> Void) {
         loadNFTImage(from: nft.images.first)
         nftNameLabel.text = nft.name
         nftValuePriceLabel.text = nft.formattedPrice()
         nftRatingImage.setupRating(rating: nft.rating)
+        self.likeButtonAction = likeButtonAction
     }
     
     // MARK: - Private Methods
@@ -47,10 +50,19 @@ final class FavouriteNFTCollectionViewCell: UICollectionViewCell, ReuseIdentifyi
         guard let imageName = imageName, let imageUrl = URL(string: imageName) else { return }
         nftImage.kf.setImage(with: imageUrl)
     }
+    
+    private func setupNFTLikeButton() {
+        nftLikeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
+    }
+    
+    // MARK: - Event Handler (Actions)
+    @objc private func likeButtonTapped() {
+        likeButtonAction?()
+    }
 }
 
-// MARK: - Layout
 extension FavouriteNFTCollectionViewCell {
+    // MARK: - Layout
     private func setupViewsAndConstraints() {
         [nftImage, nftLikeButton, mainStackView].forEach {
             contentView.addSubview($0)
@@ -63,7 +75,7 @@ extension FavouriteNFTCollectionViewCell {
         [descriptionStackView, nftValuePriceLabel].forEach {
             mainStackView.addArrangedSubview($0)
         }
-
+        
         NSLayoutConstraint.activate([
             nftImage.centerYAnchor.constraint(equalTo: centerYAnchor),
             nftImage.leadingAnchor.constraint(equalTo: leadingAnchor),

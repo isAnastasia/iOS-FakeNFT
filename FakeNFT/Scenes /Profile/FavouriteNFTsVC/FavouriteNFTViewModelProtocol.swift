@@ -13,4 +13,5 @@ protocol FavouriteNFTViewModelProtocol {
     func loadFavouriteNFTs()
     func getNFT(at index: Int) -> MyNFTModel?
     func numberOfNFTs() -> Int
+    func unlikeNFT(at index: Int) 
 }

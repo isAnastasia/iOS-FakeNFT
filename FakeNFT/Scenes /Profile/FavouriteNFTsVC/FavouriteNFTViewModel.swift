@@ -23,7 +23,7 @@ final class FavouriteNFTViewModel: FavouriteNFTViewModelProtocol {
     private let favouriteNFTService: FavouriteNFTServiceProtocol
     
     // MARK: - Initializers
-    init(favouriteNFTService: FavouriteNFTServiceProtocol = FavouriteNFTService()) {
+    init(favouriteNFTService: FavouriteNFTService = FavouriteNFTService()) {
         self.favouriteNFTService = favouriteNFTService
         loadFavouriteNFTs()
     }
@@ -49,5 +49,17 @@ final class FavouriteNFTViewModel: FavouriteNFTViewModelProtocol {
     
     func numberOfNFTs() -> Int {
         return nfts.count
+    }
+
+    func unlikeNFT(at index: Int) {
+        guard index >= 0 && index < nfts.count else { return }
+        let nft = nfts[index]
+        favouriteNFTService.unlikeNFT(nftID: nft.id) { [weak self] success in
+            if success {
+                self?.nfts.remove(at: index)
+            } else {
+                print("Failed to unlike NFT with ID: \(nft.id)")
+            }
+        }
     }
 }

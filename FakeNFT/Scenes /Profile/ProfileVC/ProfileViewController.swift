@@ -50,6 +50,11 @@ final class ProfileViewController: UIViewController {
         viewModel?.loadData()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel?.loadData()
+    }
+    
     // MARK: - Private Methods
     private func setupBindings() {
         viewModel?.onProfileDataUpdated = { [weak self] in

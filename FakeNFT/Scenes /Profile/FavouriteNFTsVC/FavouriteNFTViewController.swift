@@ -10,9 +10,11 @@ import ProgressHUD
 
 final class FavouriteNFTViewController: UIViewController {
 
+    // MARK: - Public Properties
+    var onFavouritesCountUpdated: ((Int) -> ())?
+    
     // MARK: - Private Properties
     private var viewModel: FavouriteNFTViewModelProtocol
-
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(
             frame: .zero,
@@ -25,7 +27,6 @@ final class FavouriteNFTViewController: UIViewController {
         collectionView.delegate = self
         return collectionView
     }()
-    
     private let stubLabel = Labels(style: .bold17LabelStyle, text: "У Вас ещё нет избранных NFT")
 
     // MARK: - Initializers
@@ -33,7 +34,6 @@ final class FavouriteNFTViewController: UIViewController {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         bindViewModel()
-        self.hidesBottomBarWhenPushed = true
     }
 
     required init?(coder: NSCoder) {
@@ -47,6 +47,7 @@ final class FavouriteNFTViewController: UIViewController {
         setupNavigationBar()
         setupCollectionView()
         setupStubLabel()
+        viewModel.loadFavouriteNFTs()
     }
 
     // MARK: - Private Methods
@@ -57,6 +58,8 @@ final class FavouriteNFTViewController: UIViewController {
         viewModel.onLoadingStatusChanged = { [weak self] isLoading in
             if isLoading {
                 ProgressHUD.show()
+                self?.stubLabel.isHidden = true
+                self?.collectionView.isHidden = true
             } else {
                 ProgressHUD.dismiss()
                 self?.updateView()
@@ -130,7 +133,9 @@ extension FavouriteNFTViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         if let nft = viewModel.getNFT(at: indexPath.row) {
-            cell.configure(with: nft)
+            cell.configure(with: nft) { [weak self] in
+                self?.viewModel.unlikeNFT(at: indexPath.row)
+            }
         }
         return cell
     }
