@@ -10,10 +10,6 @@ import Foundation
 typealias Binding<T> = (T) -> Void
 
 final class CatalogSingleCollectionViewModel {
-//    let name: String
-//    let cover: String
-//    let nftCount: Int
-    
     let collection: NftCollection
     var titleBinding: Binding<String>? {
         didSet {

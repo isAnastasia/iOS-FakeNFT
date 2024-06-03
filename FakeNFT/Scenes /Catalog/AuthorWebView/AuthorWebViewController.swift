@@ -35,7 +35,6 @@ final class AuthorWebViewController: UIViewController, WKNavigationDelegate, Loa
     }
     
     //MARK: - WKNavigationDelegate
-    
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         self.showLoading()
     }
@@ -82,9 +81,7 @@ final class AuthorWebViewController: UIViewController, WKNavigationDelegate, Loa
         if let url = URL(string: websiteLinkString) {
             webView.load(URLRequest(url: url))
         } else {
-            
+            //show error
         }
-        //let url = URL(string: "https://cloud.yandex.ru")!
-        
     }
 }

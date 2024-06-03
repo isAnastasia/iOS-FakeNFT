@@ -11,45 +11,6 @@ typealias NftResultCompletion = (Result<NftResultModel, Error>) -> Void
 typealias CartResultCompletion = (Result<CartResultModel, Error>) -> Void
 typealias ProfileInfoResultCompletion = (Result<ProfileInfoResultModel, Error>) -> Void
 
-struct NftResultModel: Decodable {
-    let id: String
-    let name: String
-    let images: [String]
-    let rating: Int
-    let price: Double
-}
-
-struct CartResultModel: Decodable {
-    let nfts: [String]
-    let id: String
-}
-
-struct ProfileInfoResultModel: Decodable {
-    let likes: [String]
-    let website: String
-    let id: String
-}
-
-struct CartRequest: NetworkRequest {
-    let baseUrl = NetworkConstants.baseURL
-    var endpoint: URL? {
-        URL(string: "\(baseUrl)/api/v1/orders/1")
-    }
-    var httpMethod: HttpMethod {
-        .get
-    }
-}
-
-struct ProfileInfoRequest: NetworkRequest {
-    let baseUrl = NetworkConstants.baseURL
-    var endpoint: URL? {
-        URL(string: "\(baseUrl)/api/v1/profile/1")
-    }
-    var httpMethod: HttpMethod {
-        .get
-    }
-}
-
 final class NftProvider {
     private let networkClient: NetworkClient
         

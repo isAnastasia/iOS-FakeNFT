@@ -53,7 +53,6 @@ final class CatalogCollectionsViewModel {
     }
     
     func fetchCollections() {
-        print("we are going to fetch all collections")
         var convertedCollections: [CatalogSingleCollectionViewModel] = []
         showLoadingHandler?()
         provider.getCollections { [weak self] result in
@@ -70,7 +69,6 @@ final class CatalogCollectionsViewModel {
                                                   nfts: collection.nfts)))
                 }
                 self.collections = self.sortCollections(collectionsToSort: convertedCollections)
-                print("we afetched all collections")
                 self.hideLoadingHandler?()
             case .failure(let error):
                 self.hideLoadingHandler?()

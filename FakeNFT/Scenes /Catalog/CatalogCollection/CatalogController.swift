@@ -1,7 +1,7 @@
 import UIKit
 
 final class CatalogViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, ErrorView, LoadingView {
-    internal lazy var activityIndicator = UIActivityIndicatorView()
+    lazy var activityIndicator = UIActivityIndicatorView()
     
     var collectionsViewModel = CatalogCollectionsViewModel()
     
@@ -71,7 +71,6 @@ final class CatalogViewController: UIViewController, UITableViewDataSource, UITa
             return UITableViewCell()
         }
         cell.prepareForReuse()
-        print("set collection for each cell in cellForRowAt")
         cell.viewModel = collectionsViewModel.collections[indexPath.row]
         return cell
     }

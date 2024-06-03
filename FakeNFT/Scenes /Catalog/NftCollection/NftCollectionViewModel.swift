@@ -13,6 +13,7 @@ final class NftCollectionViewModel {
     var showLoadingHandler: (() -> ())?
     var hideLoadingHandler: (() -> ())?
     var websiteLink = ""
+    
     private(set) var nfts: [NftCellModel] = []{
         didSet {
             nftsBinding?(nfts)
@@ -60,13 +61,11 @@ final class NftCollectionViewModel {
         
         for id in collectionInformation.nfts {
             group.enter()
-            print("request started")
             provider.getNftById(id: id) { [weak self] result in
                 guard let self = self else {return}
                 switch result {
                 case .success(let nftResult):
                     fetchedNfts.append(nftResult)
-                    print("request finished")
                     group.leave()
                 case .failure(let error):
                     print(error)

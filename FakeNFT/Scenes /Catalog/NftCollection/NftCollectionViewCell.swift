@@ -15,7 +15,6 @@ final class NftCollectionViewCell: UICollectionViewCell {
     var nftModel: NftCellModel? {
         didSet {
             guard let model = nftModel else {return}
-            //nftImageView.image = UIImage(named: "nft1.png")
             self.loadImage(urlString: model.cover)
             nameLabel.text = model.name
             let str = String(model.price) + " ETH"
@@ -23,7 +22,6 @@ final class NftCollectionViewCell: UICollectionViewCell {
             updateRating(rating: model.stars)
             updateCartButton(isInCart: model.isInCart)
             updateLikeButton(isLiked: model.isLiked)
-            
         }
     }
     
@@ -80,12 +78,12 @@ final class NftCollectionViewCell: UICollectionViewCell {
     //MARK: - Actions
     @objc
     func didLikeButtonTapped() {
-        
+        //TODO
     }
     
     @objc
     func didCartButtonTapped() {
-        
+        //TODO
     }
     
     private func setUpImageView() {
@@ -214,6 +212,4 @@ final class NftCollectionViewCell: UICollectionViewCell {
             nftImageView.clipsToBounds = true
         }
     }
-    
-    
 }

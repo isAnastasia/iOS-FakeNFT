@@ -61,28 +61,22 @@ struct DefaultNetworkClient: NetworkClient {
             }
         }
         guard let urlRequest = create(request: request) else { return nil }
-        print("in send")
         let task = session.dataTask(with: urlRequest) { data, response, error in
-            print("in task")
             guard let response = response as? HTTPURLResponse else {
                 onResponse(.failure(NetworkClientError.urlSessionError))
-                print("1")
                 return
             }
 
             guard 200 ..< 300 ~= response.statusCode else {
                 onResponse(.failure(NetworkClientError.httpStatusCode(response.statusCode)))
-                print("2")
                 return
             }
 
             if let data = data {
                 onResponse(.success(data))
-                print("3")
                 return
             } else if let error = error {
                 onResponse(.failure(NetworkClientError.urlRequestError(error)))
-                print("4")
                 return
             } else {
                 assertionFailure("Unexpected condition!")
