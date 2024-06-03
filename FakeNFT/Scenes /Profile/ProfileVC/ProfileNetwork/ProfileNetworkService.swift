@@ -15,7 +15,7 @@ final class ProfileNetworkService: ProfileNetworkServiceProtocol {
     }
     
     func fetchProfile(
-        completion: @escaping (Result<UserProfileModel, Error>) -> Void
+        completion: @escaping (Result<UserProfileModel, Error>) -> ()
     ) {
         let request = ProfileRequest()
         networkClient.send(request: request, type: UserProfileModel.self) { result in
@@ -25,7 +25,7 @@ final class ProfileNetworkService: ProfileNetworkServiceProtocol {
     
     func updateProfile(
         profileData: String,
-        completion: @escaping (Result<UserProfileModel, Error>) -> Void
+        completion: @escaping (Result<UserProfileModel, Error>) -> ()
     ) {
         let request = UpdateProfileRequest(profileData)
         networkClient.send(request: request, type: UserProfileModel.self) { result in

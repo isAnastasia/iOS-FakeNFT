@@ -16,8 +16,8 @@ final class ProfileViewModel {
         }
     }
     
-    var onProfileDataUpdated: (() -> Void)?
-    var onLoadingStatusChanged: ((Bool) -> Void)?
+    var onProfileDataUpdated: (() -> ())?
+    var onLoadingStatusChanged: ((Bool) -> ())?
     private let profileNetworkService: ProfileNetworkServiceProtocol
     
     // MARK: - Initializers
@@ -52,7 +52,7 @@ final class ProfileViewModel {
         }
     }
     
-    func saveProfileData(completion: @escaping (Result<UserProfileModel, Error>) -> Void) {
+    func saveProfileData(completion: @escaping (Result<UserProfileModel, Error>) -> ()) {
         guard let profile = userProfile else { return }
         
         var encodedLikes = profile.likes.map { String($0) }.joined(separator: ",")
