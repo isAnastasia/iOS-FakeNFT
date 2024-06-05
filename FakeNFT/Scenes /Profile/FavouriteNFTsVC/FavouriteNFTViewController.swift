@@ -34,6 +34,7 @@ final class FavouriteNFTViewController: UIViewController {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         bindViewModel()
+        self.hidesBottomBarWhenPushed = true
     }
 
     required init?(coder: NSCoder) {

@@ -15,5 +15,6 @@ protocol ProfileEditorViewModelProtocol {
     func updateUserDescription(_ description: String)
     func updateUserWebsite(_ website: String)
     func saveProfileData(completion: @escaping (Result<UserProfileModel, Error>) -> ())
+    func updateAvatar(_ avatar: String)
 }
 

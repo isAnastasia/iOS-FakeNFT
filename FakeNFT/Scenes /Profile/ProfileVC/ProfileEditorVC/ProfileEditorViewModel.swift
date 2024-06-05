@@ -20,6 +20,10 @@ final class ProfileEditorViewModel: ProfileEditorViewModelProtocol {
     }
     
     // MARK: - Public Methods
+    func updateAvatar(_ avatar: String) {
+        userProfile = userProfile.updateAvatar(avatar)
+    }
+    
     func updateUserName(_ name: String) {
         userProfile = userProfile.updateUserName(name)
     }
