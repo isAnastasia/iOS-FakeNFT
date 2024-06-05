@@ -37,6 +37,18 @@ struct UserProfileModel: Codable {
             id: self.id
         )
     }
+    
+    func updateAvatar(_ avatar: String) -> UserProfileModel {
+        return UserProfileModel(
+            name: self.name,
+            avatar: avatar,
+            description: self.description,
+            website: self.website,
+            nfts: self.nfts,
+            likes: self.likes,
+            id: self.id
+        )
+    }
 
     func updateUserDescription(_ description: String) -> UserProfileModel {
         return UserProfileModel(

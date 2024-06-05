@@ -70,11 +70,10 @@ final class MyNFTService: MyNFTServiceProtocol {
                 switch result {
                 case .success(let nftItem):
                     nftItems.append(nftItem)
-                    dispatchGroup.leave()
                 case .failure(let error):
                     completion(.failure(error))
-                    dispatchGroup.leave()
                 }
+                dispatchGroup.leave()
             }
         }
         

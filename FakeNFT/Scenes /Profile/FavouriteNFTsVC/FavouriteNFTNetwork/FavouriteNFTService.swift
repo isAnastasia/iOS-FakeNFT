@@ -82,10 +82,10 @@ final class FavouriteNFTService: FavouriteNFTServiceProtocol {
     
     private func fetchNFTDetails(ids: [String], completion: @escaping (Result<[MyNFTModel], Error>) -> Void) {
         var nftItems: [MyNFTModel] = []
-        let group = DispatchGroup()
+        let dispatchGroup = DispatchGroup()
         
         for id in ids {
-            group.enter()
+            dispatchGroup.enter()
             let request = GetNftByIdRequest(id: id)
             client.send(request: request, type: MyNFTModel.self) { result in
                 switch result {
@@ -94,11 +94,11 @@ final class FavouriteNFTService: FavouriteNFTServiceProtocol {
                 case .failure(let error):
                     completion(.failure(error))
                 }
-                group.leave()
+                dispatchGroup.leave()
             }
         }
         
-        group.notify(queue: .main) {
+        dispatchGroup.notify(queue: .main) {
             completion(.success(nftItems))
         }
     }

@@ -7,6 +7,7 @@
 
 import UIKit
 import ProgressHUD
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
@@ -25,6 +26,7 @@ final class ProfileViewController: UIViewController {
     }()
     
     private let userPhotoImage = ImageViews(style: .userPhotoStyle)
+
     private let userNameLabel = Labels(style: .userNameLabelStyle)
     private let userDescriptionLabel = Labels(style: .userDescription)
     private let userWebsiteLabel = Labels(style: .userWebsite)
@@ -45,8 +47,10 @@ final class ProfileViewController: UIViewController {
         viewModel = ProfileViewModel(profileNetworkService: ProfileNetworkService())
         setupViewsAndConstraints()
         setupTableView()
-        setupBindings()
+        
         setupNavigationBar()
+        setupBindings()
+        setupUserWebsiteLabelTapGesture()
         viewModel?.loadData()
     }
     
@@ -56,6 +60,12 @@ final class ProfileViewController: UIViewController {
     }
     
     // MARK: - Private Methods
+    private func setupUserWebsiteLabelTapGesture() {
+        let websiteTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleWebsiteTap))
+        userWebsiteLabel.isUserInteractionEnabled = true
+        userWebsiteLabel.addGestureRecognizer(websiteTapGesture)
+    }
+    
     private func setupBindings() {
         viewModel?.onProfileDataUpdated = { [weak self] in
             self?.updateUI()
@@ -76,6 +86,20 @@ final class ProfileViewController: UIViewController {
         userWebsiteLabel.text = profile.website
         myNftLabel.text = "Мои NFT (\(profile.nfts.count))"
         favoriteNftLabel.text = "Избранные NFT (\(profile.likes.count))"
+
+        if let avatarURL = URL(string: profile.avatar) {
+            userPhotoImage.kf.setImage(with: avatarURL, placeholder: UIImage(named: "userPhoto"), options: nil, progressBlock: nil, completionHandler: { result in
+                switch result {
+                case .success(let value):
+                    print("Image successfully loaded: \(value.source.url?.absoluteString ?? "")")
+                case .failure(let error):
+                    print("Error loading image: \(error.localizedDescription)")
+                }
+            })
+        } else {
+            print("Invalid URL: \(profile.avatar)")
+        }
+        
         tableView.reloadData()
     }
     
@@ -109,6 +133,14 @@ final class ProfileViewController: UIViewController {
             self?.viewModel?.onProfileDataUpdated?()
         }
         present(profileEditorVC, animated: true, completion: nil)
+    }
+    
+    @objc private func handleWebsiteTap() {
+        guard let websiteText = userWebsiteLabel.text,
+              let url = URL(string: websiteText) else { return }
+        let webViewModel = WebViewModel(url: url)
+        let webVC = WebViewController(viewModel: webViewModel)
+        navigationController?.pushViewController(webVC, animated: true)
     }
 }
 
@@ -188,8 +220,11 @@ extension ProfileViewController: UITableViewDelegate {
             let favouriteNFTVC = FavouriteNFTViewController(viewModel: favouriteNFTViewModel)
             navigationController?.pushViewController(favouriteNFTVC, animated: true)
         case 2:
-            let aboutDeveloperVC = AboutDeveloperViewController()
-            navigationController?.pushViewController(aboutDeveloperVC, animated: true)
+            guard let websiteText = userWebsiteLabel.text,
+                  let url = URL(string: websiteText) else { return }
+            let webViewModel = WebViewModel(url: url)
+            let webVC = WebViewController(viewModel: webViewModel)
+            navigationController?.pushViewController(webVC, animated: true)
         default:
             break
         }

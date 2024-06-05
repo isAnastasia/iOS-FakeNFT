@@ -8,12 +8,16 @@
 import Foundation
 
 final class ProfileNetworkService: ProfileNetworkServiceProtocol {
+    
+    // MARK: - Private Properties
     private let networkClient: NetworkClient
     
+    // MARK: - Initializers
     init(networkClient: NetworkClient = DefaultNetworkClient()) {
         self.networkClient = networkClient
     }
     
+    // MARK: - Public Properties
     func fetchProfile(
         completion: @escaping (Result<UserProfileModel, Error>) -> ()
     ) {

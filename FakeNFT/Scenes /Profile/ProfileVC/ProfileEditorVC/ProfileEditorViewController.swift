@@ -6,12 +6,11 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ProfileEditorViewController: UIViewController {
     
     // MARK: - Private Properties
-    private let viewModel: ProfileEditorViewModelProtocol
-    
     private lazy var nameTF = TextFields(
         style: .defaultTFStyle,
         target: self,
@@ -39,6 +38,8 @@ final class ProfileEditorViewController: UIViewController {
         tapGesture.cancelsTouchesInView = false
         return tapGesture
     }()
+    
+    private let viewModel: ProfileEditorViewModelProtocol
     
     private let closeButton = Buttons(style: .closeButtonStyle)
     
@@ -72,6 +73,7 @@ final class ProfileEditorViewController: UIViewController {
         setupCloseButtonAction()
         setupInitialValues()
         setupKeyboardObservers()
+        setupUserPhotoEditorButtonAction()
     }
     
     // MARK: - Private Methods
@@ -96,6 +98,10 @@ final class ProfileEditorViewController: UIViewController {
         nameTF.text = profile.name
         descriptionTV.text = profile.description
         websiteTF.text = profile.website
+        
+        if let avatarURL = URL(string: profile.avatar) {
+            userPhotoImage.kf.setImage(with: avatarURL)
+        }
     }
     
     private func setupKeyboardObservers() {
@@ -155,6 +161,13 @@ final class ProfileEditorViewController: UIViewController {
     }
     
     @objc private func userPhotoEditorButtonTapped() {
+        let alertController = AlertBuilder.createEditPhotoAlert(
+            currentURL: viewModel.userProfile.avatar
+        ) { [weak self] newURL in
+            self?.viewModel.updateAvatar(newURL)
+            self?.userPhotoImage.kf.setImage(with: URL(string: newURL))
+        }
+        present(alertController, animated: true, completion: nil)
     }
     
     @objc private func nameTFDidChange(_ textField: UITextField) {

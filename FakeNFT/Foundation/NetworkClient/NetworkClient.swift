@@ -143,7 +143,6 @@ struct DefaultNetworkClient: NetworkClient {
             let response = try decoder.decode(T.self, from: data)
             onResponse(.success(response))
         } catch {
-            print("Failed to parse data: \(String(data: data, encoding: .utf8) ?? "N/A")")
             onResponse(.failure(NetworkClientError.parsingError))
         }
     }

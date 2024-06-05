@@ -40,7 +40,6 @@ final class MyNFTViewController: UIViewController {
     // MARK: - Private Methods
     private func bindViewModel() {
         viewModel.onNFTsUpdated = { [weak self] in
-            print("NFTs updated in view model: \(self?.viewModel.nfts ?? [])")
             self?.updateView()
         }
         viewModel.onLoadingStatusChanged = { [weak self] isLoading in
