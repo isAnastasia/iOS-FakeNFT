@@ -2,7 +2,7 @@
 //  WebViewModel.swift
 //  FakeNFT
 //
-//  Created by Дарья Дарья on 05.06.2024.
+//  Created by Dmitry Dmitry on 05.06.2024.
 //
 
 import Foundation
