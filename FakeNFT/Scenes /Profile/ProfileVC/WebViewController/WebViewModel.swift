@@ -37,15 +37,26 @@ final class WebViewModel: NSObject {
 
 // MARK: - WKNavigationDelegate
 extension WebViewModel: WKNavigationDelegate {
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    func webView(
+        _ webView: WKWebView,
+        didFinish navigation: WKNavigation!
+    ) {
         onStateChange?(.loaded)
     }
     
-    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+    func webView(
+        _ webView: WKWebView,
+        didFail navigation: WKNavigation!,
+        withError error: Error
+    ) {
         onStateChange?(.error(error))
     }
     
-    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+    func webView(
+        _ webView: WKWebView,
+        didFailProvisionalNavigation navigation: WKNavigation!,
+        withError error: Error
+    ) {
         onStateChange?(.error(error))
     }
 }

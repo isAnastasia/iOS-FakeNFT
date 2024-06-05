@@ -11,8 +11,6 @@ import Kingfisher
 final class ProfileEditorViewController: UIViewController {
     
     // MARK: - Private Properties
-    private let viewModel: ProfileEditorViewModelProtocol
-    
     private lazy var nameTF = TextFields(
         style: .defaultTFStyle,
         target: self,
@@ -40,6 +38,8 @@ final class ProfileEditorViewController: UIViewController {
         tapGesture.cancelsTouchesInView = false
         return tapGesture
     }()
+    
+    private let viewModel: ProfileEditorViewModelProtocol
     
     private let closeButton = Buttons(style: .closeButtonStyle)
     
@@ -161,33 +161,14 @@ final class ProfileEditorViewController: UIViewController {
     }
     
     @objc private func userPhotoEditorButtonTapped() {
-//        let alertController = UIAlertController(title: "Edit Photo URL", message: "Enter new photo URL", preferredStyle: .alert)
-//        
-//        alertController.addTextField { textField in
-//            textField.placeholder = "Photo URL"
-//            textField.text = self.viewModel.userProfile.avatar
-//        }
-//        
-//        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-//        let okAction = UIAlertAction(title: "OK", style: .default) { [weak self] _ in
-//            if let textField = alertController.textFields?.first, let newURL = textField.text {
-//                self?.viewModel.updateAvatar(newURL)
-//                self?.userPhotoImage.kf.setImage(with: URL(string: newURL))
-//            }
-//        }
-//        
-//        alertController.addAction(cancelAction)
-//        alertController.addAction(okAction)
-//        
-//        present(alertController, animated: true, completion: nil)
-        
-        let alertController = AlertBuilder.createEditPhotoAlert(currentURL: viewModel.userProfile.avatar) { [weak self] newURL in
+        let alertController = AlertBuilder.createEditPhotoAlert(
+            currentURL: viewModel.userProfile.avatar
+        ) { [weak self] newURL in
             self?.viewModel.updateAvatar(newURL)
             self?.userPhotoImage.kf.setImage(with: URL(string: newURL))
         }
         present(alertController, animated: true, completion: nil)
     }
-
     
     @objc private func nameTFDidChange(_ textField: UITextField) {
         viewModel.updateUserName(textField.text ?? "")

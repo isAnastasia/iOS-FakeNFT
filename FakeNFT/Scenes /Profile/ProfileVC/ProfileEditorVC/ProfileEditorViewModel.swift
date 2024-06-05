@@ -14,7 +14,9 @@ final class ProfileEditorViewModel: ProfileEditorViewModelProtocol {
     private let profileNetworkService: ProfileNetworkService
     
     // MARK: - Initializers
-    init(profile: UserProfileModel, profileNetworkService: ProfileNetworkService = ProfileNetworkService()) {
+    init(profile: UserProfileModel, 
+         profileNetworkService: ProfileNetworkService = ProfileNetworkService()
+    ) {
         self.userProfile = profile
         self.profileNetworkService = profileNetworkService
     }
@@ -36,14 +38,18 @@ final class ProfileEditorViewModel: ProfileEditorViewModelProtocol {
         userProfile = userProfile.updateUserWebsite(website)
     }
     
-    func saveProfileData(completion: @escaping (Result<UserProfileModel, Error>) -> ()) {
+    func saveProfileData(
+        completion: @escaping (Result<UserProfileModel, Error>
+        ) -> ()) {
         var encodedLikes = userProfile.likes.map { String($0) }.joined(separator: ",")
         if encodedLikes.isEmpty {
             encodedLikes = "null"
         }
         let profileData = "name=\(userProfile.name)&description=\(userProfile.description)&website=\(userProfile.website)&avatar=\(userProfile.avatar)"
         
-        profileNetworkService.updateProfile(profileData: profileData) { [weak self] result in
+        profileNetworkService.updateProfile(
+            profileData: profileData
+        ) { [weak self] result in
             switch result {
             case .success(let updatedProfile):
                 self?.userProfile = updatedProfile
