@@ -61,16 +61,18 @@ final class CatalogCollectionsViewModel {
             case .success(let nftCollectionsResult):
                 nftCollectionsResult.forEach { collection in
                     convertedCollections.append(CatalogSingleCollectionViewModel(
-                        title: collection.name,
-                        cover: collection.cover,
-                        nftCount: collection.nfts.count))
+                        collection: NftCollection(id: collection.id,
+                                                  title: collection.name,
+                                                  cover: collection.cover,
+                                                  author: collection.author,
+                                                  description: collection.description,
+                                                  nfts: collection.nfts)))
                 }
                 self.collections = self.sortCollections(collectionsToSort: convertedCollections)
                 self.hideLoadingHandler?()
             case .failure(let error):
                 self.hideLoadingHandler?()
                 self.errorBinding?()
-                print(error)
             }
         }
     }
@@ -80,12 +82,12 @@ final class CatalogCollectionsViewModel {
         switch selectedSorting {
         case .ByName:
             sortedCollections.sort {
-                $0.name < $1.name
+                $0.collection.title < $1.collection.title
             }
             return sortedCollections
         case .ByNftCount:
             sortedCollections.sort {
-                $0.nftCount > $1.nftCount
+                $0.collection.nfts.count > $1.collection.nfts.count
             }
             return sortedCollections
         case .Default:

@@ -1,7 +1,7 @@
 import UIKit
 
 final class CatalogViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, ErrorView, LoadingView {
-    internal lazy var activityIndicator = UIActivityIndicatorView()
+    lazy var activityIndicator = UIActivityIndicatorView()
     
     var collectionsViewModel = CatalogCollectionsViewModel()
     
@@ -82,6 +82,20 @@ final class CatalogViewController: UIViewController, UITableViewDataSource, UITa
     //MARK: - Delegate
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 179 + 8
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let collection = collectionsViewModel.collections[indexPath.row].collection
+        let viewModel = NftCollectionViewModel(collectionInfo: NftCollection(
+            id: collection.id,
+            title: collection.title,
+            cover: collection.cover,
+            author: collection.author,
+            description: collection.description,
+            nfts: collection.nfts))
+        let vc = NftCollectionViewController(nftCollectionViewModel: viewModel)
+        vc.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
     //MARK: - Setting Up UI

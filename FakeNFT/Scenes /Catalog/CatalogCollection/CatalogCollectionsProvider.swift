@@ -7,7 +7,7 @@
 
 import Foundation
 
-typealias NftCollectionCompletion = (Result<[NftCollection], Error>) -> Void
+typealias NftCollectionCompletion = (Result<[NftCollectionCover], Error>) -> Void
 
 final class CatalogCollectionsProvider {
     private let networkClient: NetworkClient
@@ -18,7 +18,7 @@ final class CatalogCollectionsProvider {
         
     func getCollections(completion: @escaping NftCollectionCompletion) {
         let request = NFTCollectionRequest()
-        networkClient.send(request: request, type: [NftCollection].self) { [weak self] result in
+        networkClient.send(request: request, type: [NftCollectionCover].self) { [weak self] result in
             switch result {
             case .success(let nft):
                 completion(.success(nft))
