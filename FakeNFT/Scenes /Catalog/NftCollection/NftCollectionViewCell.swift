@@ -117,6 +117,36 @@ final class NftCollectionViewCell: UICollectionViewCell {
     @objc
     func didCartButtonTapped() {
         //TODO
+        guard let model = nftModel else {return}
+        
+        // show loading
+        UIApplication.shared.windows.first?.isUserInteractionEnabled = false
+        ProgressHUD.show()
+        
+        provider.changeCartInfo(nftId: model.id) { [weak self] result in
+            // hide loading
+            DispatchQueue.main.async {
+                UIApplication.shared.windows.first?.isUserInteractionEnabled = true
+                ProgressHUD.dismiss()
+                switch result {
+                case .success(let cart):
+                    if cart.nfts.contains(model.id) {
+                        //  нфт в корзине, поставить корзину с крестом
+                        self?.nftModel?.isInCart = true
+                        self?.updateCartButton(isInCart: true)
+                    } else {
+                        // теперь нфт не в корзине, поставить пустую корзину
+                        self?.nftModel?.isInCart = false
+                        self?.updateCartButton(isInCart: false)
+                    }
+                    
+                    // change icon
+                case .failure(let error):
+                    print(error)
+                }
+            }
+            
+        }
     }
     
     //MARK: - Setting Up UI

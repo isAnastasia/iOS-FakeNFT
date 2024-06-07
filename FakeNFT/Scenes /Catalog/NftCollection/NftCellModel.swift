@@ -13,7 +13,7 @@ struct NftCellModel {
     let stars: Int
     var isLiked: Bool
     let price: Double
-    let isInCart: Bool
+    var isInCart: Bool
     
     let id: String
     

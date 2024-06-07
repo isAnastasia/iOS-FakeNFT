@@ -17,6 +17,22 @@ struct LikesResultModel: Decodable {
     let id: String
 }
 
+struct ChangeCartRequest: NetworkRequest {
+    
+    let baseUrl = NetworkConstants.baseURL
+    var endpoint: URL? {
+        URL(string: "\(baseUrl)/api/v1/orders/1")
+    }
+    var httpMethod: HttpMethod {
+        .put
+    }
+    var httpBody: String?
+    
+    init(httpBody: String) {
+        self.httpBody = httpBody
+    }
+}
+
 final class NftProvider {
     private let networkClient: NetworkClient
         
@@ -90,7 +106,34 @@ final class NftProvider {
         }
     }
     
-    func changeCartInfo() {
-        
+    func changeCartInfo(nftId: String, completion: @escaping CartResultCompletion) {
+        getMyCart { [weak self] result in
+            switch result {
+            case .success(let cart):
+                print(cart)
+                let oldCart = cart.nfts
+                var newCart: [String] = []
+                if oldCart.contains(nftId) {
+                    newCart = oldCart.filter(){$0 != nftId}
+                } else {
+                    newCart = oldCart
+                    newCart.append(nftId)
+                }
+                let convertedCart = newCart.isEmpty ? "null" : newCart.joined(separator: ",")
+                let request = ChangeCartRequest(httpBody: "nfts=\(convertedCart)")
+                print(convertedCart)
+                
+                self?.networkClient.send(request: request, type: CartResultModel.self) { [weak self] result in
+                    switch result {
+                    case .success(let cart):
+                        completion(.success(cart))
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                }
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
     }
 }
