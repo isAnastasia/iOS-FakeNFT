@@ -7,7 +7,9 @@
 
 import Foundation
 
-struct ProfileInfoRequest: NetworkRequest {
+struct GetProfileInfoRequest: NetworkRequest {
+    var httpBody: String?
+    
     let baseUrl = NetworkConstants.baseURL
     var endpoint: URL? {
         URL(string: "\(baseUrl)/api/v1/profile/1")

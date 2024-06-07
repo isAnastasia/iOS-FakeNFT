@@ -15,12 +15,15 @@ struct NftCellModel {
     let price: Double
     let isInCart: Bool
     
-    init(cover: String, name: String, stars: Int, isLiked: Bool, price: Double, isInCart: Bool) {
+    let id: String
+    
+    init(cover: String, name: String, stars: Int, isLiked: Bool, price: Double, isInCart: Bool, id: String) {
         self.cover = cover
         self.name = name
         self.stars = stars
         self.isLiked = isLiked
         self.price = price
         self.isInCart = isInCart
+        self.id = id
     }
 }

@@ -10,6 +10,12 @@ import Foundation
 typealias NftResultCompletion = (Result<NftResultModel, Error>) -> Void
 typealias CartResultCompletion = (Result<CartResultModel, Error>) -> Void
 typealias ProfileInfoResultCompletion = (Result<ProfileInfoResultModel, Error>) -> Void
+typealias LikesResultCompletion = (Result<LikesResultModel, Error>) -> Void
+
+struct LikesResultModel: Decodable {
+    let likes: [String]
+    let id: String
+}
 
 final class NftProvider {
     private let networkClient: NetworkClient
@@ -42,8 +48,8 @@ final class NftProvider {
         }
     }
     
-    func getMyFavourites(completion: @escaping ProfileInfoResultCompletion) {
-        let request = ProfileInfoRequest()
+    func getProfileInfo(completion: @escaping ProfileInfoResultCompletion) {
+        let request = GetProfileInfoRequest()
         networkClient.send(request: request, type: ProfileInfoResultModel.self) { [weak self] result in
             switch result {
             case .success(let likes):
@@ -52,5 +58,39 @@ final class NftProvider {
                 completion(.failure(error))
             }
         }
+    }
+    
+    func changeLikes(likeId: String, completion: @escaping LikesResultCompletion) {
+        getProfileInfo { [weak self] result in
+            switch result {
+            case .success(let userInfo):
+                let oldLikes = userInfo.likes
+                var newLikes: [String] = []
+                if oldLikes.contains(likeId) {
+                    newLikes = oldLikes.filter(){$0 != likeId}
+                } else {
+                    newLikes = oldLikes
+                    newLikes.append(likeId)
+                }
+                let convertedLikes = newLikes.isEmpty ? "null" : newLikes.joined(separator: ",")
+                let request = ChangeLikesRequest(httpBody: "likes=\(convertedLikes)")
+                print(convertedLikes)
+                
+                self?.networkClient.send(request: request, type: LikesResultModel.self) { [weak self] result in
+                    switch result {
+                    case .success(let likes):
+                        completion(.success(likes))
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                }
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    func changeCartInfo() {
+        
     }
 }

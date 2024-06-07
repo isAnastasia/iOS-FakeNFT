@@ -52,6 +52,8 @@ final class NftCollectionViewModel {
                 self?.getMyLikes { [weak self] result in
                     switch result {
                     case .success(let userInfo):
+                        print("-----------------------------------------------")
+                        print(userInfo)
                         self?.likedNfts = Set(userInfo.likes)
                         self?.websiteLink = userInfo.website
                         self?.getNfts { [weak self] result in
@@ -80,7 +82,7 @@ final class NftCollectionViewModel {
     }
     
     private func getMyLikes(completion: @escaping ProfileInfoResultCompletion) {
-        provider.getMyFavourites { [weak self] result in
+        provider.getProfileInfo { [weak self] result in
             switch result {
             case .success(let userInfo):
                 completion(.success(userInfo))
@@ -114,7 +116,8 @@ final class NftCollectionViewModel {
                                     stars: $0.rating,
                                     isLiked: self.checkIfNftIsLiked(id: $0.id),
                                     price: $0.price,
-                                    isInCart: self.checkIfNftIsInCart(id: $0.id))
+                                    isInCart: self.checkIfNftIsInCart(id: $0.id),
+                                    id: $0.id)
             }
             completion(.success(allNfts))
         }

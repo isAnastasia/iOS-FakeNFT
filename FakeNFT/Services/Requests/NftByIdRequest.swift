@@ -1,6 +1,7 @@
 import Foundation
 
 struct NFTRequest: NetworkRequest {
+    var httpBody: String?
 
     let id: String
 

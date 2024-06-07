@@ -7,9 +7,11 @@
 
 import UIKit
 import Kingfisher
+import ProgressHUD
 
 final class NftCollectionViewCell: UICollectionViewCell {
     static let identifier = "NftCollectionViewCell"
+    private let provider: NftProvider = NftProvider(networkClient: DefaultNetworkClient())
     
     var nftModel: NftCellModel? {
         didSet {
@@ -80,7 +82,36 @@ final class NftCollectionViewCell: UICollectionViewCell {
     //MARK: - Actions
     @objc
     func didLikeButtonTapped() {
-        //TODO
+        guard let model = nftModel else {return}
+        
+        // show loading
+        UIApplication.shared.windows.first?.isUserInteractionEnabled = false
+        ProgressHUD.show()
+        
+        provider.changeLikes(likeId: model.id) { [weak self] result in
+            // hide loading
+            DispatchQueue.main.async {
+                UIApplication.shared.windows.first?.isUserInteractionEnabled = true
+                ProgressHUD.dismiss()
+                switch result {
+                case .success(let likes):
+                    if likes.likes.contains(model.id) {
+                        // теперь нфт будет лайкнутым, поставить розовый лайк
+                        self?.nftModel?.isLiked = true
+                        self?.updateLikeButton(isLiked: true)
+                    } else {
+                        // теперь нфт не лайкнутый, поставить белый лайк
+                        self?.nftModel?.isLiked = false
+                        self?.updateLikeButton(isLiked: false)
+                    }
+                    
+                    // change icon
+                case .failure(let error):
+                    print(error)
+                }
+            }
+            
+        }
     }
     
     @objc
