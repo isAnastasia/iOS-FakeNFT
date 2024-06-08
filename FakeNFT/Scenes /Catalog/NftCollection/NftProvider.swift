@@ -90,7 +90,6 @@ final class NftProvider {
                 }
                 let convertedLikes = newLikes.isEmpty ? "null" : newLikes.joined(separator: ",")
                 let request = ChangeLikesRequest(httpBody: "likes=\(convertedLikes)")
-                print(convertedLikes)
                 
                 self?.networkClient.send(request: request, type: LikesResultModel.self) { [weak self] result in
                     switch result {
@@ -110,7 +109,6 @@ final class NftProvider {
         getMyCart { [weak self] result in
             switch result {
             case .success(let cart):
-                print(cart)
                 let oldCart = cart.nfts
                 var newCart: [String] = []
                 if oldCart.contains(nftId) {
@@ -121,7 +119,6 @@ final class NftProvider {
                 }
                 let convertedCart = newCart.isEmpty ? "null" : newCart.joined(separator: ",")
                 let request = ChangeCartRequest(httpBody: "nfts=\(convertedCart)")
-                print(convertedCart)
                 
                 self?.networkClient.send(request: request, type: CartResultModel.self) { [weak self] result in
                     switch result {

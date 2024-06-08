@@ -52,8 +52,6 @@ final class NftCollectionViewModel {
                 self?.getMyLikes { [weak self] result in
                     switch result {
                     case .success(let userInfo):
-                        print("-----------------------------------------------")
-                        print(userInfo)
                         self?.likedNfts = Set(userInfo.likes)
                         self?.websiteLink = userInfo.website
                         self?.getNfts { [weak self] result in

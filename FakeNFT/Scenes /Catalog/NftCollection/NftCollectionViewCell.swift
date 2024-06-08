@@ -11,18 +11,40 @@ import ProgressHUD
 
 final class NftCollectionViewCell: UICollectionViewCell {
     static let identifier = "NftCollectionViewCell"
-    private let provider: NftProvider = NftProvider(networkClient: DefaultNetworkClient())
-    
-    var nftModel: NftCellModel? {
+    var nftCollectionCellViewModel: NftCollectionCellViewModel? {
         didSet {
-            guard let model = nftModel else {return}
-            self.loadImage(urlString: model.cover)
-            nameLabel.text = model.name
-            let str = String(model.price) + " ETH"
-            priceLabel.text = str
-            updateRating(rating: model.stars)
-            updateCartButton(isInCart: model.isInCart)
-            updateLikeButton(isLiked: model.isLiked)
+            nftCollectionCellViewModel?.nftInfoBinding = { [weak self] nftModel in
+                self?.nameLabel.text = nftModel.name
+                self?.loadImage(urlString: nftModel.cover)
+                self?.setRating(rating: nftModel.stars)
+                self?.setPrice(price: nftModel.price)
+                self?.updateLikeButton(isLiked: nftModel.isLiked)
+                self?.updateCartButton(isInCart: nftModel.isInCart)
+            }
+            
+            nftCollectionCellViewModel?.isLikedBinding = { [weak self] isLiked in
+                self?.updateLikeButton(isLiked: isLiked)
+            }
+            
+            nftCollectionCellViewModel?.isInCartBinding = { [weak self] isInCart in
+                self?.updateCartButton(isInCart: isInCart)
+            }
+            
+            nftCollectionCellViewModel?.showLoadingHandler = { [weak self] in
+                UIApplication.shared.windows.first?.isUserInteractionEnabled = false
+                ProgressHUD.show()
+                
+            }
+            
+            nftCollectionCellViewModel?.showSuccessHandler = { [weak self] in 
+                UIApplication.shared.windows.first?.isUserInteractionEnabled = true
+                ProgressHUD.showSucceed(delay: 1)
+            }
+            
+            nftCollectionCellViewModel?.showErrorHandler = { [weak self] in
+                UIApplication.shared.windows.first?.isUserInteractionEnabled = true
+                ProgressHUD.showFailed(delay: 1)
+            }
         }
     }
     
@@ -82,71 +104,12 @@ final class NftCollectionViewCell: UICollectionViewCell {
     //MARK: - Actions
     @objc
     func didLikeButtonTapped() {
-        guard let model = nftModel else {return}
-        
-        // show loading
-        UIApplication.shared.windows.first?.isUserInteractionEnabled = false
-        ProgressHUD.show()
-        
-        provider.changeLikes(likeId: model.id) { [weak self] result in
-            // hide loading
-            DispatchQueue.main.async {
-                UIApplication.shared.windows.first?.isUserInteractionEnabled = true
-                ProgressHUD.dismiss()
-                switch result {
-                case .success(let likes):
-                    if likes.likes.contains(model.id) {
-                        // теперь нфт будет лайкнутым, поставить розовый лайк
-                        self?.nftModel?.isLiked = true
-                        self?.updateLikeButton(isLiked: true)
-                    } else {
-                        // теперь нфт не лайкнутый, поставить белый лайк
-                        self?.nftModel?.isLiked = false
-                        self?.updateLikeButton(isLiked: false)
-                    }
-                    
-                    // change icon
-                case .failure(let error):
-                    print(error)
-                }
-            }
-            
-        }
+        nftCollectionCellViewModel?.didLikeButtonTapped()
     }
     
     @objc
     func didCartButtonTapped() {
-        //TODO
-        guard let model = nftModel else {return}
-        
-        // show loading
-        UIApplication.shared.windows.first?.isUserInteractionEnabled = false
-        ProgressHUD.show()
-        
-        provider.changeCartInfo(nftId: model.id) { [weak self] result in
-            // hide loading
-            DispatchQueue.main.async {
-                UIApplication.shared.windows.first?.isUserInteractionEnabled = true
-                ProgressHUD.dismiss()
-                switch result {
-                case .success(let cart):
-                    if cart.nfts.contains(model.id) {
-                        //  нфт в корзине, поставить корзину с крестом
-                        self?.nftModel?.isInCart = true
-                        self?.updateCartButton(isInCart: true)
-                    } else {
-                        // теперь нфт не в корзине, поставить пустую корзину
-                        self?.nftModel?.isInCart = false
-                        self?.updateCartButton(isInCart: false)
-                    }
-                    
-                    // change icon
-                case .failure(let error):
-                    print(error)
-                }
-            }
-            
-        }
+        nftCollectionCellViewModel?.didCartButtonTapped()
     }
     
     //MARK: - Setting Up UI
@@ -165,9 +128,6 @@ final class NftCollectionViewCell: UICollectionViewCell {
     }
     
     private func setUpStarsStackView() {
-        if let model = nftModel {
-            updateRating(rating: model.stars)
-        }
         starsStackView.axis = NSLayoutConstraint.Axis.horizontal
         starsStackView.spacing = 2
         starsImages.forEach { starImageView in
@@ -238,12 +198,17 @@ final class NftCollectionViewCell: UICollectionViewCell {
     }
     
     //MARK: - Updating Cell Information
-    private func updateRating(rating: Int) {
+    private func setRating(rating: Int) {
         for i in 0..<rating {
             if let starImage = UIImage(named: "goldStar.png") {
                 starsImages[i].image = starImage
             }
         }
+    }
+    
+    private func setPrice(price: Double) {
+        let text = String(price) + " ETH"
+        priceLabel.text = text
     }
     
     private func updateCartButton(isInCart: Bool) {

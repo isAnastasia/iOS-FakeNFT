@@ -125,7 +125,8 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
             return UICollectionViewCell()
         }
         cell.prepareForReuse()
-        cell.nftModel = nftCollectionViewModel.nfts[indexPath.row]
+        let viewModel = NftCollectionCellViewModel(nftModel: nftCollectionViewModel.nfts[indexPath.row])
+        cell.nftCollectionCellViewModel = viewModel
         return cell
     }
     
