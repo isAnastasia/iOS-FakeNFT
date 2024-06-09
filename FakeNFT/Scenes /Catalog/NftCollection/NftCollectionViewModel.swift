@@ -11,8 +11,8 @@ final class NftCollectionViewModel {
     let collectionInformation: NftCollection
     var nftsBinding: Binding<[NftCellModel]>?
     var showLoadingHandler: (() -> ())?
-    var hideLoadingHandler: (() -> ())?
-    var errorHandler: (() -> ())?
+    var showSuccessHandler: (() -> ())?
+    var showErrorHandler: (() -> ())?
     var websiteLink = ""
     
     private(set) var nfts: [NftCellModel] = []{
@@ -33,12 +33,56 @@ final class NftCollectionViewModel {
     func fetchDataToDisplay() {
         self.showLoadingHandler?()
         fetchData { [weak self] result in
-            self?.hideLoadingHandler?()
             switch result {
             case .success(let nfts):
+                self?.showSuccessHandler?()
                 self?.nfts = nfts
             case .failure(_):
-                self?.errorHandler?()
+                self?.showErrorHandler?()
+            }
+        }
+    }
+    
+    func didLikeButtonTapped(nftId: String, completion: @escaping (Bool) -> ()) {
+        showLoadingHandler?()
+        provider.changeLikes(likeId: nftId) { [weak self] result in
+            guard let self = self else {return}
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let likes):
+                    self.showSuccessHandler?()
+                    if likes.likes.contains(nftId) {
+                        completion(true)
+                    } else {
+                        completion(false)
+                    }
+                case .failure(let error):
+                    self.showErrorHandler?()
+                    print(error)
+                }
+            }
+
+        }
+    }
+    
+    func didCartButtonTapped(nftId: String, completion: @escaping (Bool) -> ()) {
+        showLoadingHandler?()
+        provider.changeCartInfo(nftId: nftId) { [weak self] result in
+            guard let self = self else {return}
+            DispatchQueue.main.async {
+                //
+                switch result {
+                case .success(let cart):
+                    self.showSuccessHandler?()
+                    if cart.nfts.contains(nftId) {
+                        completion(true)
+                    } else {
+                        completion(false)
+                    }
+                case .failure(let error):
+                    self.showErrorHandler?()
+                    print(error)
+                }
             }
         }
     }
@@ -60,7 +104,6 @@ final class NftCollectionViewModel {
                     case .failure(let error):
                         self?.handleResult(result: .failure(error), completion: completion)
                     }
-                    
                 }
             case .failure(let error):
                 self?.handleResult(result: .failure(error), completion: completion)

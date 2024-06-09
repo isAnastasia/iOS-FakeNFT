@@ -7,44 +7,20 @@
 
 import UIKit
 import Kingfisher
-import ProgressHUD
 
 final class NftCollectionViewCell: UICollectionViewCell {
     static let identifier = "NftCollectionViewCell"
-    var nftCollectionCellViewModel: NftCollectionCellViewModel? {
+    var didLikeTappedHandler: ((String) -> ())?
+    var didCartTappedHandler: ((String) -> ())?
+    var nftModel: NftCellModel? {
         didSet {
-            nftCollectionCellViewModel?.nftInfoBinding = { [weak self] nftModel in
-                self?.nameLabel.text = nftModel.name
-                self?.loadImage(urlString: nftModel.cover)
-                self?.setRating(rating: nftModel.stars)
-                self?.setPrice(price: nftModel.price)
-                self?.updateLikeButton(isLiked: nftModel.isLiked)
-                self?.updateCartButton(isInCart: nftModel.isInCart)
-            }
-            
-            nftCollectionCellViewModel?.isLikedBinding = { [weak self] isLiked in
-                self?.updateLikeButton(isLiked: isLiked)
-            }
-            
-            nftCollectionCellViewModel?.isInCartBinding = { [weak self] isInCart in
-                self?.updateCartButton(isInCart: isInCart)
-            }
-            
-            nftCollectionCellViewModel?.showLoadingHandler = { [weak self] in
-                UIApplication.shared.windows.first?.isUserInteractionEnabled = false
-                ProgressHUD.show()
-                
-            }
-            
-            nftCollectionCellViewModel?.showSuccessHandler = { [weak self] in 
-                UIApplication.shared.windows.first?.isUserInteractionEnabled = true
-                ProgressHUD.showSucceed(delay: 1)
-            }
-            
-            nftCollectionCellViewModel?.showErrorHandler = { [weak self] in
-                UIApplication.shared.windows.first?.isUserInteractionEnabled = true
-                ProgressHUD.showFailed(delay: 1)
-            }
+            guard let model = nftModel else {return}
+            self.loadImage(urlString: model.cover)
+            nameLabel.text = model.name
+            setPrice(price: model.price)
+            setRating(rating: model.stars)
+            updateCartButton(isInCart: model.isInCart)
+            updateLikeButton(isLiked: model.isLiked)
         }
     }
     
@@ -104,12 +80,33 @@ final class NftCollectionViewCell: UICollectionViewCell {
     //MARK: - Actions
     @objc
     func didLikeButtonTapped() {
-        nftCollectionCellViewModel?.didLikeButtonTapped()
+        if let model = nftModel {
+            didLikeTappedHandler?(model.id)
+        }
     }
     
     @objc
     func didCartButtonTapped() {
-        nftCollectionCellViewModel?.didCartButtonTapped()
+        if let model = nftModel {
+            didCartTappedHandler?(model.id)
+        }
+    }
+    
+    //MARK: - Public Methods
+    func updateCartButton(isInCart: Bool) {
+        if isInCart {
+            cartButton.setImage(UIImage(named: "cart.png"), for: .normal)
+        } else {
+            cartButton.setImage(UIImage(named: "noCart.png"), for: .normal)
+        }
+    }
+    
+    func updateLikeButton(isLiked: Bool) {
+        if isLiked {
+            likeButton.setImage(UIImage(named: "like.png"), for: .normal)
+        } else {
+            likeButton.setImage(UIImage(named: "dislike.png"), for: .normal)
+        }
     }
     
     //MARK: - Setting Up UI
@@ -197,7 +194,6 @@ final class NftCollectionViewCell: UICollectionViewCell {
         ])
     }
     
-    //MARK: - Updating Cell Information
     private func setRating(rating: Int) {
         for i in 0..<rating {
             if let starImage = UIImage(named: "goldStar.png") {
@@ -209,22 +205,6 @@ final class NftCollectionViewCell: UICollectionViewCell {
     private func setPrice(price: Double) {
         let text = String(price) + " ETH"
         priceLabel.text = text
-    }
-    
-    private func updateCartButton(isInCart: Bool) {
-        if isInCart {
-            cartButton.setImage(UIImage(named: "cart.png"), for: .normal)
-        } else {
-            cartButton.setImage(UIImage(named: "noCart.png"), for: .normal)
-        }
-    }
-    
-    private func updateLikeButton(isLiked: Bool) {
-        if isLiked {
-            likeButton.setImage(UIImage(named: "like.png"), for: .normal)
-        } else {
-            likeButton.setImage(UIImage(named: "dislike.png"), for: .normal)
-        }
     }
     
     private func loadImage(urlString: String) {
