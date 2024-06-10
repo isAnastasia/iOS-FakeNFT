@@ -123,6 +123,11 @@ struct DefaultNetworkClient: NetworkClient {
             urlRequest.httpBody = dtoEncoded
         }
         
+        if let body = request.httpBody {
+            urlRequest.setValue(NetworkConstants.contentTypeValue, forHTTPHeaderField: NetworkConstants.contentTypeKey)
+            urlRequest.httpBody = body.data(using: .utf8)
+        }
+        
         urlRequest.setValue(NetworkConstants.tokenValue, forHTTPHeaderField: NetworkConstants.tokenKey)
         urlRequest.setValue(NetworkConstants.acceptValue, forHTTPHeaderField: NetworkConstants.acceptKey)
         return urlRequest

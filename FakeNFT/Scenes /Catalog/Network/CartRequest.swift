@@ -8,6 +8,8 @@
 import Foundation
 
 struct CartRequest: NetworkRequest {
+    var httpBody: String?
+    
     let baseUrl = NetworkConstants.baseURL
     var endpoint: URL? {
         URL(string: "\(baseUrl)/api/v1/orders/1")

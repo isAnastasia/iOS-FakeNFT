@@ -6,9 +6,9 @@
 //
 
 import UIKit
+import ProgressHUD
 
-final class NftCollectionViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, LoadingView {
-    var activityIndicator = UIActivityIndicatorView()
+final class NftCollectionViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     var nftCollectionViewModel: NftCollectionViewModel
     
     private let coverImageView = UIImageView()
@@ -61,26 +61,24 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         nftCollectionViewModel.showLoadingHandler = { [weak self] in
-            guard let self = self else {return}
-            self.showLoading()
-            self.view.isUserInteractionEnabled = false
+            UIApplication.shared.windows.first?.isUserInteractionEnabled = false
+            ProgressHUD.show()
         }
         
-        nftCollectionViewModel.hideLoadingHandler = { [weak self] in
-            guard let self = self else {return}
-            self.hideLoading()
-            self.view.isUserInteractionEnabled = true
+        nftCollectionViewModel.showSuccessHandler = { [weak self] in
+            UIApplication.shared.windows.first?.isUserInteractionEnabled = true
+            ProgressHUD.showSucceed(delay: 0.5)
         }
-        
-        nftCollectionViewModel.errorHandler = { [weak self] in
-            guard let self = self else {return}
-            self.showErrorAlert()
+
+        nftCollectionViewModel.showErrorHandler = { [weak self] in
+            UIApplication.shared.windows.first?.isUserInteractionEnabled = true
+            ProgressHUD.dismiss()
+            self?.showErrorAlert()
         }
         
         nftCollectionViewModel.nftsBinding = { [weak self] _ in
             guard let self = self else {return}
             self.collectionView.reloadData()
-            
         }
         
         setUpUI()
@@ -100,11 +98,6 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
         collectionView.register(NftCollectionViewCell.self, forCellWithReuseIdentifier: NftCollectionViewCell.identifier)
         
         view.addSubview(collectionView)
-        
-        collectionView.addSubview(activityIndicator)
-        activityIndicator.style = .medium
-        
-        activityIndicator.constraintCenters(to: collectionView)
         
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -126,6 +119,17 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
         }
         cell.prepareForReuse()
         cell.nftModel = nftCollectionViewModel.nfts[indexPath.row]
+        cell.didLikeTappedHandler = { [weak self] id in
+            self?.nftCollectionViewModel.didLikeButtonTapped(nftId: id) { [weak self] isLiked in
+                cell.updateLikeButton(isLiked: isLiked)
+            }
+        }
+        cell.didCartTappedHandler = { [weak self] id in
+            self?.nftCollectionViewModel.didCartButtonTapped(nftId: id) { [weak self] isInCart in
+                cell.updateCartButton(isInCart: isInCart)
+            }
+            
+        }
         return cell
     }
     

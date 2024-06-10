@@ -5,7 +5,6 @@
 //  Created by Anastasia Gorbunova on 25.05.2024.
 //
 
-import Foundation
 import UIKit
 import Kingfisher
 

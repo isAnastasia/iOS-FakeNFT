@@ -10,15 +10,15 @@ import Kingfisher
 
 final class NftCollectionViewCell: UICollectionViewCell {
     static let identifier = "NftCollectionViewCell"
-    
+    var didLikeTappedHandler: ((String) -> ())?
+    var didCartTappedHandler: ((String) -> ())?
     var nftModel: NftCellModel? {
         didSet {
             guard let model = nftModel else {return}
             self.loadImage(urlString: model.cover)
             nameLabel.text = model.name
-            let str = String(model.price) + " ETH"
-            priceLabel.text = str
-            updateRating(rating: model.stars)
+            setPrice(price: model.price)
+            setRating(rating: model.stars)
             updateCartButton(isInCart: model.isInCart)
             updateLikeButton(isLiked: model.isLiked)
         }
@@ -80,12 +80,33 @@ final class NftCollectionViewCell: UICollectionViewCell {
     //MARK: - Actions
     @objc
     func didLikeButtonTapped() {
-        //TODO
+        if let model = nftModel {
+            didLikeTappedHandler?(model.id)
+        }
     }
     
     @objc
     func didCartButtonTapped() {
-        //TODO
+        if let model = nftModel {
+            didCartTappedHandler?(model.id)
+        }
+    }
+    
+    //MARK: - Public Methods
+    func updateCartButton(isInCart: Bool) {
+        if isInCart {
+            cartButton.setImage(UIImage(named: "cart.png"), for: .normal)
+        } else {
+            cartButton.setImage(UIImage(named: "noCart.png"), for: .normal)
+        }
+    }
+    
+    func updateLikeButton(isLiked: Bool) {
+        if isLiked {
+            likeButton.setImage(UIImage(named: "like.png"), for: .normal)
+        } else {
+            likeButton.setImage(UIImage(named: "dislike.png"), for: .normal)
+        }
     }
     
     //MARK: - Setting Up UI
@@ -104,9 +125,6 @@ final class NftCollectionViewCell: UICollectionViewCell {
     }
     
     private func setUpStarsStackView() {
-        if let model = nftModel {
-            updateRating(rating: model.stars)
-        }
         starsStackView.axis = NSLayoutConstraint.Axis.horizontal
         starsStackView.spacing = 2
         starsImages.forEach { starImageView in
@@ -176,8 +194,7 @@ final class NftCollectionViewCell: UICollectionViewCell {
         ])
     }
     
-    //MARK: - Updating Cell Information
-    private func updateRating(rating: Int) {
+    private func setRating(rating: Int) {
         for i in 0..<rating {
             if let starImage = UIImage(named: "goldStar.png") {
                 starsImages[i].image = starImage
@@ -185,20 +202,9 @@ final class NftCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    private func updateCartButton(isInCart: Bool) {
-        if isInCart {
-            cartButton.setImage(UIImage(named: "cart.png"), for: .normal)
-        } else {
-            cartButton.setImage(UIImage(named: "noCart.png"), for: .normal)
-        }
-    }
-    
-    private func updateLikeButton(isLiked: Bool) {
-        if isLiked {
-            likeButton.setImage(UIImage(named: "like.png"), for: .normal)
-        } else {
-            likeButton.setImage(UIImage(named: "dislike.png"), for: .normal)
-        }
+    private func setPrice(price: Double) {
+        let text = String(price) + " ETH"
+        priceLabel.text = text
     }
     
     private func loadImage(urlString: String) {
