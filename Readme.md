@@ -204,5 +204,6 @@
 
 # Ссылки на скринкасты (записи экрана) с демонстрацией выполненных эпиков:
 - эпик Профиль https://disk.yandex.ru/i/1JGqTPv3i8Syyg
+- эпик Каталог https://disk.yandex.ru/d/SxAcqfkPnTxkzw
 
 
