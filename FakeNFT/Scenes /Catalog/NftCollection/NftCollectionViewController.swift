@@ -158,6 +158,17 @@ final class NftCollectionViewController: UIViewController, UICollectionViewDataS
         return UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let id = nftCollectionViewModel.nfts[indexPath.row].id
+        let presenter = NftDetailPresenterImpl(input: NftDetailInput(id: id),
+                                               service: NftServiceImpl(networkClient: DefaultNetworkClient(),
+                                                                       storage: NftStorageImpl()))
+        
+        let vc = NftDetailViewController(presenter: presenter)
+        presenter.view = vc
+        present(vc, animated: true)
+    }
+    
     //MARK: - Load Cover
     private func loadCover(urlString: String) {
         if let encodingStr = urlString.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed) {
