@@ -13,3 +13,9 @@ protocol NetworkRequest {
     var dto: Encodable? { get }
     var httpBody: String? { get }
 }
+
+// default values
+extension NetworkRequest {
+    var httpMethod: HttpMethod { .get }
+    var dto: Encodable? { nil }
+}

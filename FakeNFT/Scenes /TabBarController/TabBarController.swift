@@ -32,7 +32,7 @@ final class TabBarController: UITabBarController {
                 NSLocalizedString("Tab.catalog", comment: ""),
                 "catalogTabbarNoactive",
                 "catalogTabbarActive",
-                TestCatalogViewController(servicesAssembly: servicesAssembly)
+                CatalogViewController()
             ),
             (
                 NSLocalizedString("Tab.cart", comment: ""),
@@ -56,7 +56,6 @@ final class TabBarController: UITabBarController {
                 image: UIImage(named: tabItem.image),
                 selectedImage: UIImage(named: tabItem.selectedImage)
             )
-            
             let navController = UINavigationController(rootViewController: tabItem.controller)
             navController.tabBarItem = tabBarItem
             viewControllers.append(navController)
