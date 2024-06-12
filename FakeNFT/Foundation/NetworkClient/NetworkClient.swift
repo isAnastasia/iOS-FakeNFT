@@ -61,7 +61,6 @@ struct DefaultNetworkClient: NetworkClient {
             }
         }
         guard let urlRequest = create(request: request) else { return nil }
-
         let task = session.dataTask(with: urlRequest) { data, response, error in
             guard let response = response as? HTTPURLResponse else {
                 onResponse(.failure(NetworkClientError.urlSessionError))
@@ -114,7 +113,7 @@ struct DefaultNetworkClient: NetworkClient {
             assertionFailure("Empty endpoint")
             return nil
         }
-
+        
         var urlRequest = URLRequest(url: endpoint)
         urlRequest.httpMethod = request.httpMethod.rawValue
 
@@ -123,10 +122,17 @@ struct DefaultNetworkClient: NetworkClient {
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
             urlRequest.httpBody = dtoEncoded
         }
-
+        
+        if let body = request.httpBody {
+            urlRequest.setValue(NetworkConstants.contentTypeValue, forHTTPHeaderField: NetworkConstants.contentTypeKey)
+            urlRequest.httpBody = body.data(using: .utf8)
+        }
+        
+        urlRequest.setValue(NetworkConstants.tokenValue, forHTTPHeaderField: NetworkConstants.tokenKey)
+        urlRequest.setValue(NetworkConstants.acceptValue, forHTTPHeaderField: NetworkConstants.acceptKey)
         return urlRequest
     }
-
+    
     private func parse<T: Decodable>(data: Data, type _: T.Type, onResponse: @escaping (Result<T, Error>) -> Void) {
         do {
             let response = try decoder.decode(T.self, from: data)
